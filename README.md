@@ -25,8 +25,8 @@ pip install -r requirements.txt
 Le coeur du traitement est dans `src/compliance_nlp/` :
 
 - extraction du texte PDF
-- regles d'analyse sur les zones sensibles
-- lecture du fichier `configs/forbidden_words.csv`
+- lecture des sections configurees dans `configs/sections.csv`
+- lecture des controles generiques dans `configs/generic_detection_rules.csv`
 - lecture des fichiers Article 9 `configs/article9_terms.csv` et `configs/article9_whitelist.csv`
 - serialisation des resultats
 - helpers d'exploitation pour notebook
@@ -45,21 +45,32 @@ python scripts/run_analysis.py
 
 Le resultat JSON est ecrit dans `outputs/analysis/results.json`.
 
-## Analyse ciblee par mots interdits
+## Controle generique par referentiel
 
-Dans un premier temps, l'analyse compare le contenu des sections :
+Les controles de sections, de clauses, de conseil et de mots interdits sont pilotes par configuration.
+Ils ne sont plus codes en dur dans le pipeline.
 
-- `Beneficiaires`
-- `Conseil et Recommandation`
+Sections a extraire :
 
-avec les termes declares dans :
+- `configs/sections.csv`
 
-- `configs/forbidden_words.csv`
+Regles a appliquer :
 
-Le CSV contient :
+- `configs/generic_detection_rules.csv`
 
-- `mot_interdit`
-- `niveau_alerte` avec les valeurs `interdit`, `alerte`, `ambigue`
+Chaque regle peut contenir :
+
+- `rule_id` : identifiant stable de la regle
+- `section_scope` : section cible, par exemple `beneficiaires`, `conseil` ou `document`
+- `category` : famille de controle
+- `terms` : mots ou mots composes separes par `|`
+- `synonyms` : synonymes separes par `|`
+- `alert_level` : `interdit`, `alerte` ou `ambigue`
+- `severity` : `high`, `medium` ou `low`
+- `base_score` : score de depart
+- `fuzzy_threshold` : seuil de rapprochement pour fautes d'orthographe
+
+Le moteur generique gere les detections `exact`, `synonym`, `root` et `fuzzy`.
 
 ## Controle Article 9 RGPD
 

@@ -9,25 +9,39 @@ from .article9 import analyze_article9_section
 from .config import (
     Article9Term,
     ForbiddenTerm,
+    GenericDetectionRule,
+    SectionDefinition,
     WhitelistTerm,
     load_article9_terms,
     load_forbidden_terms,
+    load_generic_detection_rules,
+    load_section_definitions,
     load_whitelist_terms,
 )
+from .generic import analyze_generic_sections
 from .models import DocumentAnalysis, Finding
 from .pdf import extract_text_from_pdf
-from .rules import analyze_advice_section, analyze_beneficiary_section, analyze_forbidden_terms
 from .text_utils import compact_text, extract_section, normalize_whitespace
 
 
-def _build_sections(extracted_text: str) -> dict[str, str]:
-    """Extract the sections most useful for compliance rules."""
+def _build_sections(
+    extracted_text: str,
+    section_definitions: list[SectionDefinition],
+) -> dict[str, str]:
+    """Extract configured sections used by compliance rules."""
 
     text = normalize_whitespace(extracted_text)
-    return {
-        "beneficiaires": extract_section(text, "7. Beneficiaires", "8. Declarations"),
-        "conseil": extract_section(text, "9. Conseil et Recommandation", "10. Signatures"),
-    }
+    sections: dict[str, str] = {}
+    for section in section_definitions:
+        if section.section_id == "document" or not section.start_marker:
+            sections[section.section_id] = text
+            continue
+        sections[section.section_id] = extract_section(
+            text,
+            section.start_marker,
+            section.end_marker,
+        )
+    return sections
 
 
 def analyze_text(
@@ -35,28 +49,28 @@ def analyze_text(
     source_path: str,
     extracted_text: str,
     forbidden_terms: list[ForbiddenTerm] | None = None,
+    generic_rules: list[GenericDetectionRule] | None = None,
+    section_definitions: list[SectionDefinition] | None = None,
     article9_terms: list[Article9Term] | None = None,
     whitelist_terms: list[WhitelistTerm] | None = None,
 ) -> DocumentAnalysis:
     """Analyze already extracted text."""
 
-    sections = _build_sections(extracted_text)
+    section_definitions = section_definitions or load_section_definitions()
+    sections = _build_sections(extracted_text, section_definitions)
     forbidden_terms = forbidden_terms or []
+    if generic_rules is None:
+        generic_rules = load_generic_detection_rules()
     article9_terms = article9_terms or []
     whitelist_terms = whitelist_terms or []
 
     findings: list[Finding] = []
-    beneficiary_section = sections.get("beneficiaires", "")
-    advice_section = sections.get("conseil", "")
 
-    findings.extend(analyze_beneficiary_section(beneficiary_section))
-    findings.extend(analyze_advice_section(advice_section))
-    findings.extend(analyze_forbidden_terms("beneficiaires", beneficiary_section, forbidden_terms))
-    findings.extend(analyze_forbidden_terms("conseil", advice_section, forbidden_terms))
+    findings.extend(analyze_generic_sections(sections, generic_rules))
     findings.extend(
         analyze_article9_section(
             "document",
-            extracted_text,
+            sections.get("document", extracted_text),
             article9_terms=article9_terms,
             whitelist=whitelist_terms,
         )
@@ -72,6 +86,8 @@ def analyze_text(
             "finding_count": len(findings),
             "has_findings": bool(findings),
             "forbidden_terms_loaded": len(forbidden_terms),
+            "generic_rules_loaded": len(generic_rules),
+            "sections_loaded": len(section_definitions),
             "article9_terms_loaded": len(article9_terms),
             "whitelist_terms_loaded": len(whitelist_terms),
         },
@@ -81,9 +97,13 @@ def analyze_text(
 def analyze_file(
     pdf_path: str | Path,
     forbidden_terms: list[ForbiddenTerm] | None = None,
+    generic_rules: list[GenericDetectionRule] | None = None,
+    section_definitions: list[SectionDefinition] | None = None,
     article9_terms: list[Article9Term] | None = None,
     whitelist_terms: list[WhitelistTerm] | None = None,
     forbidden_words_path: str | Path | None = None,
+    generic_rules_path: str | Path | None = None,
+    sections_path: str | Path | None = None,
     article9_terms_path: str | Path | None = None,
     whitelist_path: str | Path | None = None,
 ) -> DocumentAnalysis:
@@ -94,6 +114,12 @@ def analyze_file(
     resolved_terms = forbidden_terms
     if resolved_terms is None:
         resolved_terms = load_forbidden_terms(forbidden_words_path)
+    resolved_generic_rules = generic_rules
+    if resolved_generic_rules is None:
+        resolved_generic_rules = load_generic_detection_rules(generic_rules_path)
+    resolved_section_definitions = section_definitions
+    if resolved_section_definitions is None:
+        resolved_section_definitions = load_section_definitions(sections_path)
     resolved_article9_terms = article9_terms
     if resolved_article9_terms is None:
         resolved_article9_terms = load_article9_terms(article9_terms_path)
@@ -106,6 +132,8 @@ def analyze_file(
         str(path),
         extracted_text,
         forbidden_terms=resolved_terms,
+        generic_rules=resolved_generic_rules,
+        section_definitions=resolved_section_definitions,
         article9_terms=resolved_article9_terms,
         whitelist_terms=resolved_whitelist_terms,
     )
@@ -115,6 +143,8 @@ def analyze_directory(
     input_dir: str | Path,
     output_path: str | Path | None = None,
     forbidden_words_path: str | Path | None = None,
+    generic_rules_path: str | Path | None = None,
+    sections_path: str | Path | None = None,
     article9_terms_path: str | Path | None = None,
     whitelist_path: str | Path | None = None,
 ) -> list[DocumentAnalysis]:
@@ -123,12 +153,16 @@ def analyze_directory(
     directory = Path(input_dir)
     pdf_files = sorted(directory.glob("*.pdf"))
     forbidden_terms = load_forbidden_terms(forbidden_words_path)
+    generic_rules = load_generic_detection_rules(generic_rules_path)
+    section_definitions = load_section_definitions(sections_path)
     article9_terms = load_article9_terms(article9_terms_path)
     whitelist_terms = load_whitelist_terms(whitelist_path)
     results = [
         analyze_file(
             pdf_path,
             forbidden_terms=forbidden_terms,
+            generic_rules=generic_rules,
+            section_definitions=section_definitions,
             article9_terms=article9_terms,
             whitelist_terms=whitelist_terms,
         )

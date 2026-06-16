@@ -1,0 +1,12 @@
+rule_id,section_scope,category,label,terms,synonyms,alert_level,severity,base_score,fuzzy_threshold
+beneficiary_clause_imprecise,beneficiaires,clause_beneficiaire,Clause beneficiaire imprecise,la personne qui sera la plus presente|si notre situation est toujours stable|mes proches|toute autre personne dont mon fils connaitra le nom|au moment venu,,interdit,high,0.90,0.88
+advice_unprofessional_wording,conseil,conseil,Conseil formule de maniere non professionnelle,foncer sans trop reflechir|ce contrat est top|pas besoin d'entrer dans trop de details,foncer|top,interdit,high,0.88,0.86
+advice_risk_minimization,conseil,conseil,Risques minimises ou performance suggeree,rapporte forcement sur la duree|les risques ne sont pas un vrai sujet|ca finit toujours par remonter,sans risque|garanti|garantie|certain|forcement|toujours,interdit,high,0.90,0.86
+advice_above_financial_capacity,conseil,conseil,Formule proposee au-dessus des capacites de l'adherent,represente une part tres importante du revenu disponible|depasse ses capacites actuelles|reduire fortement ses autres depenses,,interdit,high,0.90,0.88
+advice_default_formula_due_to_client_confusion,conseil,conseil,Formule par defaut retenue faute d'accompagnement adapte,ne comprand pas bien|ne saisi pas bien|formule par defaut|formule standart du cabinet|pour aller plus vite,par defaut|formule par defaut,interdit,high,0.88,0.86
+advice_spelling_quality_issue,conseil,qualite_redactionnelle,Qualite redactionnelle faible dans la zone conseil,comprand|diferences|plusieur|disponnibilite|detaille|preferer|standart,,alerte,medium,0.75,0.90
+forbidden_garanti,beneficiaires|conseil,mot_interdit,Terme interdit detecte,garanti|garantie,,interdit,high,0.90,0.88
+forbidden_sans_risque,beneficiaires|conseil,mot_interdit,Terme interdit detecte,sans risque,,interdit,high,0.90,0.88
+forbidden_certain,beneficiaires|conseil,mot_interdit,Terme interdit detecte,certain,,interdit,high,0.88,0.88
+forbidden_alerte,beneficiaires|conseil,mot_interdit,Terme surveille detecte,forcement|toujours|top|foncer,,alerte,medium,0.75,0.86
+forbidden_ambigue,beneficiaires|conseil,mot_interdit,Terme ambigu detecte,proches|par defaut,,ambigue,low,0.65,0.86
