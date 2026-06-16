@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modele de Souscription Assurance Vie</title>
+  <style>
+    :root {
+      --border: #222;
+      --text: #111;
+      --muted: #555;
+      --bg: #fff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #f2f2f2;
+      color: var(--text);
+      font-family: "Georgia", "Times New Roman", serif;
+      line-height: 1.35;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 12mm auto;
+      padding: 14mm;
+      background: var(--bg);
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      font-size: 22px;
+      text-align: center;
+      letter-spacing: 0.4px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .section {
+      border: 1px solid var(--border);
+      padding: 10px 12px 12px;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: bold;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 4px;
+      margin-bottom: 10px;
+    }
+
+    .grid-2,
+    .grid-3 {
+      display: grid;
+      gap: 10px 16px;
+    }
+
+    .grid-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .grid-3 {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .field {
+      min-height: 34px;
+    }
+
+    .label {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 4px;
+      font-weight: bold;
+    }
+
+    .line {
+      border-bottom: 1px solid var(--border);
+      height: 18px;
+      width: 100%;
+    }
+
+    .line.tall {
+      height: 42px;
+    }
+
+    .line.xl {
+      height: 64px;
+    }
+
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .box {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border: 1px solid var(--border);
+      margin-right: 5px;
+      vertical-align: -1px;
+    }
+
+    .note {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .signatures {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .signature-box {
+      border: 1px solid var(--border);
+      min-height: 90px;
+      padding: 10px;
+    }
+
+    .footer {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .page {
+        margin: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <h1>Bulletin de Souscription Assurance Vie</h1>
+    <p class="subtitle">
+      Modele de travail pour impression et remplissage manuscrit.
+      A adapter aux exigences juridiques, commerciales et de conformite de l'etablissement.
+    </p>
+
+    <section class="section">
+      <div class="section-title">1. Informations Generales</div>
+      <div class="grid-2">
+        <div class="field">
+          <span class="label">Nom du contrat</span>
+          <div class="line"></div>
+        </div>
+        <div class="field">
+          <span class="label">Reference dossier</span>
+          <div class="line"></div>
+        </div>
+        <div class="field">
+          <span class="label">Date de souscription</span>
+          <div class="line"></div>
+        </div>
+        <div class="field">
+          <span class="label">Conseiller / Intermediaire</span>
+          <div class="line"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">2. Souscripteur</div>
+      <div class="grid-2">
+        <div class="field">
+          <span class="label">Nom</span>
+          <div class="line"></div>
+        </div>
+        <div class="field">
+          <span class="label">Prenom</span>
+          <div class="line"></div>
+        </div>
+        <div class="field">
+          <span class="label">Date de naissance</span>
+          <div class="line"></div>
+        </div>
+        <div class="field">
+          <span class="label">Lieu de naissance</span>
+          <div class="line"></div>
+        </div>
+        <div class="field">
+          <span class="label">Nationalite</span>
+          <div class="line"></div>
+        </div>
+        <div class="field">
+          <span class="label">Profession</span>
+          <div class="line"></div>
+        </div>
+      </div>
+      <div class="field">
+        <span class="label">Adresse complete</span>
+        <div class="line tall"></div>
+      </div>
+      <div class="grid-3">
+        <div class="field">
+          <span class="label">Telephone</span>
+          <div class="line"></div>
+        </div>
+        <div class="field">
+          <span class="label">Email</span>
+          <div class="line"></div>
+        </div>
+        <div class="field">
+          <span class="label">Situation familiale</span>
+          <div class="line"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">3. Piece d'Identite et Residence Fiscale</div>
+      <div class="grid-2">
+        <div class="field">
+          <span class="label">Type de piece d'identite</span>
+          <div class="line"></div>
+        </div>
+        <div class="field">
+          <span class="label">Numero</span>
+          <div class="line"></div>
+        </div>
+        <div class="field">
+          <span class="label">Date de delivrance</span>
+          <div class="line"></div>
+        </div>
+        <div class="field">
+          <span class="label">Date d'expiration</span>
+          <div class="line"></div>
+        </div>
+      </div>
+      <div class="field">
+        <span class="label">Pays de residence fiscale</span>
+        <div class="line"></div>
+      </div>
+      <div class="field">
+        <span class="label">Numero fiscal / TIN</span>
+        <div class="line"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">4. Objet de la Souscription</div>
+      <div class="options">
+        <span><span class="box"></span>Epargne</span>
+        <span><span class="box"></span>Preparation retraite</span>
+        <span><span class="box"></span>Transmission</span>
+        <span><span class="box"></span>Valorisation de capital</span>
+        <span><span class="box"></span>Autre</span>
+      </div>
+      <div class="field">
+        <span class="label">Precisions</span>
+        <div class="line tall"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">5. Versements</div>
+      <div class="grid-2">
+        <div class="field">
+          <span class="label">Versement initial (EUR)</span>
+          <div class="line"></div>
+        </div>
+        <div class="field">
+          <span class="label">Mode de paiement</span>
+          <div class="line"></div>
+        </div>
+      </div>
+      <div class="options">
+        <span><span class="box"></span>Pas de versements programmes</span>
+        <span><span class="box"></span>Versements programmes mensuels</span>
+        <span><span class="box"></span>Versements programmes trimestriels</span>
+      </div>
+      <div class="grid-3">
+        <div class="field">
+          <span class="label">Montant programme (EUR)</span>
+          <div class="line"></div>
+        </div>
+        <div class="field">
+          <span class="label">Date de debut</span>
+          <div class="line"></div>
+        </div>
+        <div class="field">
+          <span class="label">Periodicite</span>
+          <div class="line"></div>
+        </div>
+      </div>
+      <div class="field">
+        <span class="label">Origine des fonds</span>
+        <div class="line tall"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">6. Profil Investisseur</div>
+      <div class="options">
+        <span><span class="box"></span>Prudent</span>
+        <span><span class="box"></span>Equilibre</span>
+        <span><span class="box"></span>Dynamique</span>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <span class="label">Horizon de placement</span>
+          <div class="line"></div>
+        </div>
+        <div class="field">
+          <span class="label">Niveau de connaissance financiere</span>
+          <div class="line"></div>
+        </div>
+      </div>
+      <div class="field">
+        <span class="label">Repartition souhaitee (fonds euros, unites de compte, autres)</span>
+        <div class="line tall"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">7. Beneficiaires</div>
+      <div class="field">
+        <span class="label">Clause beneficiaire</span>
+        <div class="line xl"></div>
+      </div>
+      <div class="note">
+        Exemple a adapter : "Mon conjoint, a defaut mes enfants nes ou a naitre, vivants ou representes, a defaut mes heritiers."
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">8. Declarations et Consentements</div>
+      <div class="options">
+        <span><span class="box"></span>Je reconnais avoir recu la documentation precontractuelle</span>
+        <span><span class="box"></span>Je certifie l'exactitude des informations communiquees</span>
+      </div>
+      <div class="options">
+        <span><span class="box"></span>J'accepte les conditions du contrat</span>
+        <span><span class="box"></span>J'accepte le traitement de mes donnees personnelles</span>
+      </div>
+      <div class="field">
+        <span class="label">Observations complementaires</span>
+        <div class="line xl"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">9. Conseil et Recommandation</div>
+      <div class="field">
+        <span class="label">Analyse du besoin du client</span>
+        <div class="line tall"></div>
+      </div>
+      <div class="field">
+        <span class="label">Conseil formule par le conseiller</span>
+        <div class="line xl"></div>
+      </div>
+      <div class="field">
+        <span class="label">Justification de l'adequation entre le profil client et la solution proposee</span>
+        <div class="line xl"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">10. Signatures</div>
+      <div class="signatures">
+        <div class="signature-box">
+          <strong>Souscripteur</strong>
+          <p>Date :</p>
+          <p>Lieu :</p>
+          <p>Signature :</p>
+        </div>
+        <div class="signature-box">
+          <strong>Conseiller / Intermediaire</strong>
+          <p>Date :</p>
+          <p>Lieu :</p>
+          <p>Signature et cachet :</p>
+        </div>
+      </div>
+    </section>
+
+    <p class="footer">
+      Document de demonstration interne. A faire valider par les equipes juridique, conformite et metier avant usage reel.
+    </p>
+  </main>
+</body>
+</html>

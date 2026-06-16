@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "poc-compliance-nlp"
+version = "0.1.0"
+description = "POC for insurance subscription document compliance analysis."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "pypdf>=5.0.0",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
