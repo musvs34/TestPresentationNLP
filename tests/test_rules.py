@@ -1,6 +1,3 @@
-from pathlib import Path
-
-from compliance_nlp.config import load_forbidden_terms
 from compliance_nlp.pipeline import analyze_text
 
 
@@ -75,34 +72,7 @@ def test_detects_default_formula_and_spelling_quality_issue() -> None:
     assert "advice_spelling_quality_issue" in codes
 
 
-def test_loads_forbidden_terms_from_csv(tmp_path: Path) -> None:
-    csv_path = tmp_path / "forbidden_words.csv"
-    csv_path.write_text(
-        "mot_interdit,niveau_alerte\n"
-        "proches,ambigue\n"
-        "par defaut,ambigue\n"
-        "sans risque,interdit\n",
-        encoding="utf-8",
-    )
-
-    terms = load_forbidden_terms(csv_path)
-
-    assert len(terms) == 3
-    assert terms[0].term == "proches"
-    assert terms[0].alert_level == "ambigue"
-
-
-def test_detects_forbidden_terms_in_beneficiary_and_advice_sections(tmp_path: Path) -> None:
-    csv_path = tmp_path / "forbidden_words.csv"
-    csv_path.write_text(
-        "mot_interdit,niveau_alerte\n"
-        "proches,ambigue\n"
-        "par defaut,ambigue\n"
-        "sans risque,interdit\n",
-        encoding="utf-8",
-    )
-
-    terms = load_forbidden_terms(csv_path)
+def test_detects_central_forbidden_rules_in_beneficiary_and_advice_sections() -> None:
     text = """
     7. Beneficiaires
     Mes proches par parts egales.
@@ -113,24 +83,18 @@ def test_detects_forbidden_terms_in_beneficiary_and_advice_sections(tmp_path: Pa
     10. Signatures
     """
 
-    result = analyze_text("sample.pdf", "sample.pdf", text, forbidden_terms=terms)
+    result = analyze_text("sample.pdf", "sample.pdf", text)
 
-    matched_terms = {(finding.section, finding.matched_term, finding.alert_level) for finding in result.findings}
+    matched_terms = {
+        (finding.section, finding.matched_term, finding.alert_level)
+        for finding in result.findings
+    }
     assert ("beneficiaires", "proches", "ambigue") in matched_terms
     assert ("conseil", "par defaut", "ambigue") in matched_terms
     assert ("conseil", "sans risque", "interdit") in matched_terms
 
 
-def test_section_extraction_is_case_insensitive(tmp_path: Path) -> None:
-    csv_path = tmp_path / "forbidden_words.csv"
-    csv_path.write_text(
-        "mot_interdit,niveau_alerte\n"
-        "proches,ambigue\n"
-        "foncer,alerte\n",
-        encoding="utf-8",
-    )
-
-    terms = load_forbidden_terms(csv_path)
+def test_section_extraction_is_case_insensitive() -> None:
     text = """
     7. BENEFICIAIRES
     Mes proches par parts egales.
@@ -140,7 +104,7 @@ def test_section_extraction_is_case_insensitive(tmp_path: Path) -> None:
     10. SIGNATURES
     """
 
-    result = analyze_text("sample.pdf", "sample.pdf", text, forbidden_terms=terms)
+    result = analyze_text("sample.pdf", "sample.pdf", text)
 
     matched_terms = {(finding.section, finding.matched_term) for finding in result.findings}
     assert ("beneficiaires", "proches") in matched_terms

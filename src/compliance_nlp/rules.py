@@ -2,11 +2,8 @@
 
 from __future__ import annotations
 
-import re
-
-from .config import ForbiddenTerm
 from .models import Finding
-from .text_utils import compact_text, shorten
+from .text_utils import shorten
 
 
 ALERT_LEVEL_TO_SEVERITY = {
@@ -42,46 +39,6 @@ def analyze_beneficiary_section(section_text: str) -> list[Finding]:
                     "that is hard to interpret or enforce."
                 ),
                 evidence=shorten(section_text),
-            )
-        )
-
-    return findings
-
-
-def analyze_forbidden_terms(
-    section_name: str,
-    section_text: str,
-    forbidden_terms: list[ForbiddenTerm],
-) -> list[Finding]:
-    """Detect configured terms in a specific section."""
-
-    findings: list[Finding] = []
-    haystack = compact_text(section_text).lower()
-    if not haystack:
-        return findings
-
-    for forbidden_term in forbidden_terms:
-        pattern = re.compile(
-            rf"(?<!\w){re.escape(forbidden_term.term)}(?!\w)",
-            flags=re.IGNORECASE,
-        )
-        if not pattern.search(haystack):
-            continue
-
-        findings.append(
-            Finding(
-                code=f"forbidden_term_{forbidden_term.alert_level}",
-                severity=ALERT_LEVEL_TO_SEVERITY[forbidden_term.alert_level],
-                section=section_name,
-                title=f"Terme surveille detecte dans la section {section_name}",
-                detail=(
-                    f"The configured term '{forbidden_term.term}' was detected in the "
-                    f"'{section_name}' section with alert level "
-                    f"'{forbidden_term.alert_level}'."
-                ),
-                evidence=shorten(section_text),
-                matched_term=forbidden_term.term,
-                alert_level=forbidden_term.alert_level,
             )
         )
 

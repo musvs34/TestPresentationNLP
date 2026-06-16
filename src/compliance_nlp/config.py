@@ -8,9 +8,6 @@ from pathlib import Path
 
 
 VALID_ALERT_LEVELS = {"interdit", "alerte", "ambigue"}
-DEFAULT_FORBIDDEN_WORDS_PATH = (
-    Path(__file__).resolve().parents[2] / "configs" / "forbidden_words.csv"
-)
 DEFAULT_ARTICLE9_TERMS_PATH = (
     Path(__file__).resolve().parents[2] / "configs" / "article9_terms.csv"
 )
@@ -21,15 +18,6 @@ DEFAULT_SECTIONS_PATH = Path(__file__).resolve().parents[2] / "configs" / "secti
 DEFAULT_GENERIC_RULES_PATH = (
     Path(__file__).resolve().parents[2] / "configs" / "generic_detection_rules.csv"
 )
-
-
-@dataclass(frozen=True, slots=True)
-class ForbiddenTerm:
-    """A forbidden term and its configured alert level."""
-
-    term: str
-    alert_level: str
-
 
 @dataclass(frozen=True, slots=True)
 class Article9Term:
@@ -88,32 +76,6 @@ class GenericDetectionRule:
     @property
     def all_terms(self) -> tuple[str, ...]:
         return self.terms + self.synonyms
-
-
-def load_forbidden_terms(csv_path: str | Path | None = None) -> list[ForbiddenTerm]:
-    """Load forbidden terms from the project CSV file."""
-
-    path = Path(csv_path) if csv_path is not None else DEFAULT_FORBIDDEN_WORDS_PATH
-    if not path.exists():
-        return []
-
-    terms: list[ForbiddenTerm] = []
-    with path.open("r", encoding="utf-8", newline="") as handle:
-        reader = csv.DictReader(handle)
-        for row in reader:
-            term = (row.get("mot_interdit") or "").strip()
-            alert_level = (row.get("niveau_alerte") or "").strip().lower()
-
-            if not term:
-                continue
-            if alert_level not in VALID_ALERT_LEVELS:
-                raise ValueError(
-                    f"Invalid alert level '{alert_level}' for forbidden term '{term}'."
-                )
-
-            terms.append(ForbiddenTerm(term=term.lower(), alert_level=alert_level))
-
-    return terms
 
 
 def _split_pipe_values(raw_value: str | None) -> tuple[str, ...]:

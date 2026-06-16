@@ -7,13 +7,11 @@ from pathlib import Path
 
 from .config import (
     Article9Term,
-    ForbiddenTerm,
     GenericDetectionRule,
     SectionDefinition,
     WhitelistTerm,
     article9_terms_to_generic_rules,
     load_article9_terms,
-    load_forbidden_terms,
     load_generic_detection_rules,
     load_section_definitions,
     load_whitelist_terms,
@@ -48,7 +46,6 @@ def analyze_text(
     document_name: str,
     source_path: str,
     extracted_text: str,
-    forbidden_terms: list[ForbiddenTerm] | None = None,
     generic_rules: list[GenericDetectionRule] | None = None,
     section_definitions: list[SectionDefinition] | None = None,
     article9_terms: list[Article9Term] | None = None,
@@ -58,7 +55,6 @@ def analyze_text(
 
     section_definitions = section_definitions or load_section_definitions()
     sections = _build_sections(extracted_text, section_definitions)
-    forbidden_terms = forbidden_terms or []
     if generic_rules is None:
         generic_rules = load_generic_detection_rules()
     article9_terms = article9_terms or []
@@ -86,7 +82,6 @@ def analyze_text(
         metadata={
             "finding_count": len(findings),
             "has_findings": bool(findings),
-            "forbidden_terms_loaded": len(forbidden_terms),
             "central_rules_loaded": len(generic_rules),
             "generic_rules_loaded": len(generic_rules),
             "sections_loaded": len(section_definitions),
@@ -98,12 +93,10 @@ def analyze_text(
 
 def analyze_file(
     pdf_path: str | Path,
-    forbidden_terms: list[ForbiddenTerm] | None = None,
     generic_rules: list[GenericDetectionRule] | None = None,
     section_definitions: list[SectionDefinition] | None = None,
     article9_terms: list[Article9Term] | None = None,
     whitelist_terms: list[WhitelistTerm] | None = None,
-    forbidden_words_path: str | Path | None = None,
     generic_rules_path: str | Path | None = None,
     sections_path: str | Path | None = None,
     article9_terms_path: str | Path | None = None,
@@ -113,9 +106,6 @@ def analyze_file(
 
     path = Path(pdf_path)
     extracted_text = extract_text_from_pdf(path)
-    resolved_terms = forbidden_terms
-    if resolved_terms is None:
-        resolved_terms = load_forbidden_terms(forbidden_words_path)
     resolved_generic_rules = generic_rules
     if resolved_generic_rules is None:
         resolved_generic_rules = load_generic_detection_rules(generic_rules_path)
@@ -133,7 +123,6 @@ def analyze_file(
         path.name,
         str(path),
         extracted_text,
-        forbidden_terms=resolved_terms,
         generic_rules=resolved_generic_rules,
         section_definitions=resolved_section_definitions,
         article9_terms=resolved_article9_terms,
@@ -144,7 +133,6 @@ def analyze_file(
 def analyze_directory(
     input_dir: str | Path,
     output_path: str | Path | None = None,
-    forbidden_words_path: str | Path | None = None,
     generic_rules_path: str | Path | None = None,
     sections_path: str | Path | None = None,
     article9_terms_path: str | Path | None = None,
@@ -154,7 +142,6 @@ def analyze_directory(
 
     directory = Path(input_dir)
     pdf_files = sorted(directory.glob("*.pdf"))
-    forbidden_terms = load_forbidden_terms(forbidden_words_path)
     generic_rules = load_generic_detection_rules(generic_rules_path)
     section_definitions = load_section_definitions(sections_path)
     article9_terms = load_article9_terms(article9_terms_path) if article9_terms_path else []
@@ -162,7 +149,6 @@ def analyze_directory(
     results = [
         analyze_file(
             pdf_path,
-            forbidden_terms=forbidden_terms,
             generic_rules=generic_rules,
             section_definitions=section_definitions,
             article9_terms=article9_terms,

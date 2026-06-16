@@ -3,7 +3,6 @@
 from .config import (
     article9_terms_to_generic_rules,
     load_article9_terms,
-    load_forbidden_terms,
     load_generic_detection_rules,
     load_section_definitions,
     load_whitelist_terms,
@@ -17,7 +16,6 @@ __all__ = [
     "article9_terms_to_generic_rules",
     "findings_to_records",
     "load_article9_terms",
-    "load_forbidden_terms",
     "load_generic_detection_rules",
     "load_results",
     "load_section_definitions",
