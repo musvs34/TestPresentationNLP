@@ -6,12 +6,9 @@ import json
 from pathlib import Path
 
 from .config import (
-    Article9Term,
     GenericDetectionRule,
     SectionDefinition,
     WhitelistTerm,
-    article9_terms_to_generic_rules,
-    load_article9_terms,
     load_generic_detection_rules,
     load_section_definitions,
     load_whitelist_terms,
@@ -48,7 +45,6 @@ def analyze_text(
     extracted_text: str,
     generic_rules: list[GenericDetectionRule] | None = None,
     section_definitions: list[SectionDefinition] | None = None,
-    article9_terms: list[Article9Term] | None = None,
     whitelist_terms: list[WhitelistTerm] | None = None,
 ) -> DocumentAnalysis:
     """Analyze already extracted text."""
@@ -57,9 +53,6 @@ def analyze_text(
     sections = _build_sections(extracted_text, section_definitions)
     if generic_rules is None:
         generic_rules = load_generic_detection_rules()
-    article9_terms = article9_terms or []
-    if article9_terms:
-        generic_rules = [*generic_rules, *article9_terms_to_generic_rules(article9_terms)]
     if whitelist_terms is None:
         whitelist_terms = load_whitelist_terms()
 
@@ -85,7 +78,6 @@ def analyze_text(
             "central_rules_loaded": len(generic_rules),
             "generic_rules_loaded": len(generic_rules),
             "sections_loaded": len(section_definitions),
-            "legacy_article9_terms_loaded": len(article9_terms),
             "whitelist_terms_loaded": len(whitelist_terms),
         },
     )
@@ -95,11 +87,9 @@ def analyze_file(
     pdf_path: str | Path,
     generic_rules: list[GenericDetectionRule] | None = None,
     section_definitions: list[SectionDefinition] | None = None,
-    article9_terms: list[Article9Term] | None = None,
     whitelist_terms: list[WhitelistTerm] | None = None,
     generic_rules_path: str | Path | None = None,
     sections_path: str | Path | None = None,
-    article9_terms_path: str | Path | None = None,
     whitelist_path: str | Path | None = None,
 ) -> DocumentAnalysis:
     """Analyze a single PDF file."""
@@ -112,9 +102,6 @@ def analyze_file(
     resolved_section_definitions = section_definitions
     if resolved_section_definitions is None:
         resolved_section_definitions = load_section_definitions(sections_path)
-    resolved_article9_terms = article9_terms
-    if resolved_article9_terms is None and article9_terms_path is not None:
-        resolved_article9_terms = load_article9_terms(article9_terms_path)
     resolved_whitelist_terms = whitelist_terms
     if resolved_whitelist_terms is None:
         resolved_whitelist_terms = load_whitelist_terms(whitelist_path)
@@ -125,7 +112,6 @@ def analyze_file(
         extracted_text,
         generic_rules=resolved_generic_rules,
         section_definitions=resolved_section_definitions,
-        article9_terms=resolved_article9_terms,
         whitelist_terms=resolved_whitelist_terms,
     )
 
@@ -135,7 +121,6 @@ def analyze_directory(
     output_path: str | Path | None = None,
     generic_rules_path: str | Path | None = None,
     sections_path: str | Path | None = None,
-    article9_terms_path: str | Path | None = None,
     whitelist_path: str | Path | None = None,
 ) -> list[DocumentAnalysis]:
     """Analyze every PDF in a directory and optionally persist results."""
@@ -144,14 +129,12 @@ def analyze_directory(
     pdf_files = sorted(directory.glob("*.pdf"))
     generic_rules = load_generic_detection_rules(generic_rules_path)
     section_definitions = load_section_definitions(sections_path)
-    article9_terms = load_article9_terms(article9_terms_path) if article9_terms_path else []
     whitelist_terms = load_whitelist_terms(whitelist_path)
     results = [
         analyze_file(
             pdf_path,
             generic_rules=generic_rules,
             section_definitions=section_definitions,
-            article9_terms=article9_terms,
             whitelist_terms=whitelist_terms,
         )
         for pdf_path in pdf_files

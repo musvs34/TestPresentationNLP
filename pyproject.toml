@@ -17,3 +17,15 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = [
+  ".git",
+  ".pytest_cache",
+  ".pytest-tmp",
+  ".venv",
+  "outputs",
+  "pytest-basetemp-*",
+  "pytest-parent-*",
+]

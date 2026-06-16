@@ -8,9 +8,6 @@ from pathlib import Path
 
 
 VALID_ALERT_LEVELS = {"interdit", "alerte", "ambigue"}
-DEFAULT_ARTICLE9_TERMS_PATH = (
-    Path(__file__).resolve().parents[2] / "configs" / "article9_terms.csv"
-)
 DEFAULT_ARTICLE9_WHITELIST_PATH = (
     Path(__file__).resolve().parents[2] / "configs" / "article9_whitelist.csv"
 )
@@ -18,24 +15,6 @@ DEFAULT_SECTIONS_PATH = Path(__file__).resolve().parents[2] / "configs" / "secti
 DEFAULT_GENERIC_RULES_PATH = (
     Path(__file__).resolve().parents[2] / "configs" / "generic_detection_rules.csv"
 )
-
-@dataclass(frozen=True, slots=True)
-class Article9Term:
-    """A sensitive Article 9 rule configured by compliance teams."""
-
-    rule_id: str
-    category: str
-    label: str
-    terms: tuple[str, ...]
-    synonyms: tuple[str, ...]
-    alert_level: str
-    base_score: float
-    fuzzy_threshold: float
-
-    @property
-    def all_terms(self) -> tuple[str, ...]:
-        return self.terms + self.synonyms
-
 
 @dataclass(frozen=True, slots=True)
 class WhitelistTerm:
@@ -88,55 +67,6 @@ def _parse_bool(raw_value: str | None, default: bool = False) -> bool:
     if raw_value is None or not raw_value.strip():
         return default
     return raw_value.strip().casefold() in {"1", "true", "yes", "oui", "y"}
-
-
-def load_article9_terms(csv_path: str | Path | None = None) -> list[Article9Term]:
-    """Load configured Article 9 sensitive data rules."""
-
-    path = Path(csv_path) if csv_path is not None else DEFAULT_ARTICLE9_TERMS_PATH
-    if not path.exists():
-        return []
-
-    terms: list[Article9Term] = []
-    with path.open("r", encoding="utf-8", newline="") as handle:
-        reader = csv.DictReader(handle)
-        for row in reader:
-            rule_id = (row.get("rule_id") or "").strip()
-            category = (row.get("category") or "").strip().lower()
-            label = (row.get("label") or rule_id).strip()
-            configured_terms = _split_pipe_values(row.get("terms"))
-            synonyms = _split_pipe_values(row.get("synonyms"))
-            alert_level = (row.get("alert_level") or "interdit").strip().lower()
-            base_score = float((row.get("base_score") or "0.8").strip())
-            fuzzy_threshold = float((row.get("fuzzy_threshold") or "0.88").strip())
-
-            if not rule_id or not category or not configured_terms:
-                continue
-            if alert_level not in VALID_ALERT_LEVELS:
-                raise ValueError(
-                    f"Invalid alert level '{alert_level}' for Article 9 rule '{rule_id}'."
-                )
-            if not 0 <= base_score <= 1:
-                raise ValueError(f"Invalid base score for Article 9 rule '{rule_id}'.")
-            if not 0 <= fuzzy_threshold <= 1:
-                raise ValueError(
-                    f"Invalid fuzzy threshold for Article 9 rule '{rule_id}'."
-                )
-
-            terms.append(
-                Article9Term(
-                    rule_id=rule_id,
-                    category=category,
-                    label=label,
-                    terms=configured_terms,
-                    synonyms=synonyms,
-                    alert_level=alert_level,
-                    base_score=base_score,
-                    fuzzy_threshold=fuzzy_threshold,
-                )
-            )
-
-    return terms
 
 
 def load_whitelist_terms(csv_path: str | Path | None = None) -> list[WhitelistTerm]:
@@ -251,28 +181,3 @@ def load_generic_detection_rules(
             )
 
     return rules
-
-
-def article9_terms_to_generic_rules(
-    article9_terms: list[Article9Term],
-) -> list[GenericDetectionRule]:
-    """Convert legacy Article 9 rules to the central configured-rule model."""
-
-    return [
-        GenericDetectionRule(
-            rule_id=term.rule_id,
-            rule_scope="article9",
-            regulatory_family="rgpd_article_9",
-            section_scope=("document",),
-            category=term.category,
-            label=term.label,
-            terms=term.terms,
-            synonyms=term.synonyms,
-            alert_level=term.alert_level,
-            severity="critical",
-            base_score=term.base_score,
-            fuzzy_threshold=term.fuzzy_threshold,
-            applies_whitelist=True,
-        )
-        for term in article9_terms
-    ]

@@ -1,8 +1,6 @@
 """Public API for the compliance NLP POC."""
 
 from .config import (
-    article9_terms_to_generic_rules,
-    load_article9_terms,
     load_generic_detection_rules,
     load_section_definitions,
     load_whitelist_terms,
@@ -13,9 +11,7 @@ from .pipeline import analyze_directory, analyze_file, load_results, save_result
 __all__ = [
     "analyze_directory",
     "analyze_file",
-    "article9_terms_to_generic_rules",
     "findings_to_records",
-    "load_article9_terms",
     "load_generic_detection_rules",
     "load_results",
     "load_section_definitions",

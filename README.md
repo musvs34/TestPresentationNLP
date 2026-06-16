@@ -110,7 +110,6 @@ Des notebooks sont disponibles dans :
 - `notebooks/01_lancer_traitement.ipynb` : lance le traitement PDF et genere `outputs/analysis/results.json`
 - `notebooks/02_analyser_resultats_scores.ipynb` : analyse les alertes, scores, categories Article 9 et files de revue humaine
 - `notebooks/03_tester_performance_detection.ipynb` : teste les detecteurs a partir d'un tableau pandas saisi dans le notebook, sans lire de PDF
-- `notebooks/analysis_workflow_example.ipynb` : exemple historique plus compact
 
 Exemple de flux :
 
