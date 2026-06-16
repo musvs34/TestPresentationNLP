@@ -72,6 +72,8 @@ class GenericDetectionRule:
     """A generic configured rule for section and wording controls."""
 
     rule_id: str
+    rule_scope: str
+    regulatory_family: str
     section_scope: tuple[str, ...]
     category: str
     label: str
@@ -81,6 +83,7 @@ class GenericDetectionRule:
     severity: str
     base_score: float
     fuzzy_threshold: float
+    applies_whitelist: bool = False
 
     @property
     def all_terms(self) -> tuple[str, ...]:
@@ -117,6 +120,12 @@ def _split_pipe_values(raw_value: str | None) -> tuple[str, ...]:
     if not raw_value:
         return ()
     return tuple(value.strip().lower() for value in raw_value.split("|") if value.strip())
+
+
+def _parse_bool(raw_value: str | None, default: bool = False) -> bool:
+    if raw_value is None or not raw_value.strip():
+        return default
+    return raw_value.strip().casefold() in {"1", "true", "yes", "oui", "y"}
 
 
 def load_article9_terms(csv_path: str | Path | None = None) -> list[Article9Term]:
@@ -230,6 +239,10 @@ def load_generic_detection_rules(
         reader = csv.DictReader(handle)
         for row in reader:
             rule_id = (row.get("rule_id") or "").strip()
+            rule_scope = (row.get("rule_scope") or row.get("scope") or "general").strip().lower()
+            regulatory_family = (
+                row.get("regulatory_family") or rule_scope or "general"
+            ).strip().lower()
             section_scope = _split_pipe_values(row.get("section_scope"))
             category = (row.get("category") or "").strip().lower()
             label = (row.get("label") or rule_id).strip()
@@ -239,6 +252,10 @@ def load_generic_detection_rules(
             severity = (row.get("severity") or "medium").strip().lower()
             base_score = float((row.get("base_score") or "0.75").strip())
             fuzzy_threshold = float((row.get("fuzzy_threshold") or "0.88").strip())
+            applies_whitelist = _parse_bool(
+                row.get("applies_whitelist"),
+                default=rule_scope == "article9",
+            )
 
             if not rule_id or not section_scope or not category or not terms:
                 continue
@@ -256,6 +273,8 @@ def load_generic_detection_rules(
             rules.append(
                 GenericDetectionRule(
                     rule_id=rule_id,
+                    rule_scope=rule_scope,
+                    regulatory_family=regulatory_family,
                     section_scope=section_scope,
                     category=category,
                     label=label,
@@ -265,7 +284,33 @@ def load_generic_detection_rules(
                     severity=severity,
                     base_score=base_score,
                     fuzzy_threshold=fuzzy_threshold,
+                    applies_whitelist=applies_whitelist,
                 )
             )
 
     return rules
+
+
+def article9_terms_to_generic_rules(
+    article9_terms: list[Article9Term],
+) -> list[GenericDetectionRule]:
+    """Convert legacy Article 9 rules to the central configured-rule model."""
+
+    return [
+        GenericDetectionRule(
+            rule_id=term.rule_id,
+            rule_scope="article9",
+            regulatory_family="rgpd_article_9",
+            section_scope=("document",),
+            category=term.category,
+            label=term.label,
+            terms=term.terms,
+            synonyms=term.synonyms,
+            alert_level=term.alert_level,
+            severity="critical",
+            base_score=term.base_score,
+            fuzzy_threshold=term.fuzzy_threshold,
+            applies_whitelist=True,
+        )
+        for term in article9_terms
+    ]

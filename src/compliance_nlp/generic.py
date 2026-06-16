@@ -6,7 +6,7 @@ import re
 from dataclasses import dataclass
 from difflib import SequenceMatcher
 
-from .config import GenericDetectionRule
+from .config import GenericDetectionRule, WhitelistTerm
 from .models import Finding
 from .text_utils import compact_text, normalize_for_matching, shorten, tokenize_words
 
@@ -46,6 +46,20 @@ def _looks_like_same_root(configured: str, token: str) -> bool:
 
 def _iter_ngrams(tokens: list[str], size: int) -> list[str]:
     return [" ".join(tokens[index : index + size]) for index in range(len(tokens) - size + 1)]
+
+
+def _is_whitelisted(matched_text: str, section_text: str, whitelist: list[WhitelistTerm]) -> bool:
+    normalized_match = normalize_for_matching(matched_text)
+    normalized_section = normalize_for_matching(section_text)
+
+    for item in whitelist:
+        normalized_expression = normalize_for_matching(item.expression)
+        if normalized_expression not in normalized_section:
+            continue
+        if normalized_match in normalized_expression or normalized_expression in normalized_match:
+            return True
+
+    return False
 
 
 def _find_exact_match(
@@ -168,6 +182,7 @@ def analyze_generic_section(
     section_name: str,
     section_text: str,
     generic_rules: list[GenericDetectionRule],
+    whitelist_terms: list[WhitelistTerm] | None = None,
 ) -> list[Finding]:
     """Apply configured generic rules to one section."""
 
@@ -180,14 +195,23 @@ def analyze_generic_section(
         rule for rule in generic_rules if section_name in rule.section_scope or "*" in rule.section_scope
     ]
 
+    whitelist_terms = whitelist_terms or []
     for rule in scoped_rules:
         match = _best_match_for_rule(compact_section, rule)
         if match is None:
             continue
+        if rule.applies_whitelist and _is_whitelisted(
+            match.matched_text,
+            compact_section,
+            whitelist_terms,
+        ):
+            continue
+
+        code = f"article9_{rule.category}" if rule.rule_scope == "article9" else rule.rule_id
 
         findings.append(
             Finding(
-                code=rule.rule_id,
+                code=code,
                 severity=rule.severity,
                 section=section_name,
                 title=rule.label,
@@ -202,6 +226,8 @@ def analyze_generic_section(
                 score=match.score,
                 detection_type=match.detection_type,
                 rule_id=rule.rule_id,
+                rule_scope=rule.rule_scope,
+                regulatory_family=rule.regulatory_family,
             )
         )
 
@@ -211,10 +237,18 @@ def analyze_generic_section(
 def analyze_generic_sections(
     sections: dict[str, str],
     generic_rules: list[GenericDetectionRule],
+    whitelist_terms: list[WhitelistTerm] | None = None,
 ) -> list[Finding]:
     """Apply configured generic rules to all available sections."""
 
     findings: list[Finding] = []
     for section_name, section_text in sections.items():
-        findings.extend(analyze_generic_section(section_name, section_text, generic_rules))
+        findings.extend(
+            analyze_generic_section(
+                section_name,
+                section_text,
+                generic_rules,
+                whitelist_terms=whitelist_terms,
+            )
+        )
     return findings

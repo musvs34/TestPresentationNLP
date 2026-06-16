@@ -30,6 +30,8 @@ def findings_to_records(results: list[DocumentAnalysis]) -> list[dict[str, Any]]
                     "score": None,
                     "detection_type": None,
                     "rule_id": None,
+                    "rule_scope": None,
+                    "regulatory_family": None,
                     "finding_count": 0,
                 }
             )
@@ -52,6 +54,8 @@ def findings_to_records(results: list[DocumentAnalysis]) -> list[dict[str, Any]]
                     "score": finding.score,
                     "detection_type": finding.detection_type,
                     "rule_id": finding.rule_id,
+                    "rule_scope": finding.rule_scope,
+                    "regulatory_family": finding.regulatory_family,
                     "finding_count": len(result.findings),
                 }
             )

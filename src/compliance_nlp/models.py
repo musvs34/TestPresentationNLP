@@ -22,6 +22,8 @@ class Finding:
     score: float | None = None
     detection_type: str | None = None
     rule_id: str | None = None
+    rule_scope: str | None = None
+    regulatory_family: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

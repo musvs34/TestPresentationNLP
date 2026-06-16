@@ -22,6 +22,8 @@ def test_loads_generic_detection_rules(tmp_path: Path) -> None:
 
     assert len(rules) == 2
     assert rules[0].rule_id == "GEN_FORBIDDEN"
+    assert rules[0].rule_scope == "general"
+    assert rules[0].regulatory_family == "general"
     assert rules[0].section_scope == ("conseil",)
     assert rules[0].terms == ("sans risque", "garantie")
     assert rules[0].synonyms == ("assure", "certain")
@@ -38,6 +40,7 @@ def test_generic_detector_matches_exact_phrase(tmp_path: Path) -> None:
     )
 
     assert findings[0].rule_id == "GEN_FORBIDDEN"
+    assert findings[0].rule_scope == "general"
     assert findings[0].detection_type == "exact"
     assert findings[0].matched_term == "sans risque"
 

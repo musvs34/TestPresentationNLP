@@ -1,12 +1,21 @@
-rule_id,section_scope,category,label,terms,synonyms,alert_level,severity,base_score,fuzzy_threshold
-beneficiary_clause_imprecise,beneficiaires,clause_beneficiaire,Clause beneficiaire imprecise,la personne qui sera la plus presente|si notre situation est toujours stable|mes proches|toute autre personne dont mon fils connaitra le nom|au moment venu,,interdit,high,0.90,0.88
-advice_unprofessional_wording,conseil,conseil,Conseil formule de maniere non professionnelle,foncer sans trop reflechir|ce contrat est top|pas besoin d'entrer dans trop de details,foncer|top,interdit,high,0.88,0.86
-advice_risk_minimization,conseil,conseil,Risques minimises ou performance suggeree,rapporte forcement sur la duree|les risques ne sont pas un vrai sujet|ca finit toujours par remonter,sans risque|garanti|garantie|certain|forcement|toujours,interdit,high,0.90,0.86
-advice_above_financial_capacity,conseil,conseil,Formule proposee au-dessus des capacites de l'adherent,represente une part tres importante du revenu disponible|depasse ses capacites actuelles|reduire fortement ses autres depenses,,interdit,high,0.90,0.88
-advice_default_formula_due_to_client_confusion,conseil,conseil,Formule par defaut retenue faute d'accompagnement adapte,ne comprand pas bien|ne saisi pas bien|formule par defaut|formule standart du cabinet|pour aller plus vite,par defaut|formule par defaut,interdit,high,0.88,0.86
-advice_spelling_quality_issue,conseil,qualite_redactionnelle,Qualite redactionnelle faible dans la zone conseil,comprand|diferences|plusieur|disponnibilite|detaille|preferer|standart,,alerte,medium,0.75,0.90
-forbidden_garanti,beneficiaires|conseil,mot_interdit,Terme interdit detecte,garanti|garantie,,interdit,high,0.90,0.88
-forbidden_sans_risque,beneficiaires|conseil,mot_interdit,Terme interdit detecte,sans risque,,interdit,high,0.90,0.88
-forbidden_certain,beneficiaires|conseil,mot_interdit,Terme interdit detecte,certain,,interdit,high,0.88,0.88
-forbidden_alerte,beneficiaires|conseil,mot_interdit,Terme surveille detecte,forcement|toujours|top|foncer,,alerte,medium,0.75,0.86
-forbidden_ambigue,beneficiaires|conseil,mot_interdit,Terme ambigu detecte,proches|par defaut,,ambigue,low,0.65,0.86
+rule_id,rule_scope,regulatory_family,section_scope,category,label,terms,synonyms,alert_level,severity,base_score,fuzzy_threshold,applies_whitelist
+beneficiary_clause_imprecise,general,conformite_metier,beneficiaires,clause_beneficiaire,Clause beneficiaire imprecise,la personne qui sera la plus presente|si notre situation est toujours stable|mes proches|toute autre personne dont mon fils connaitra le nom|au moment venu,,interdit,high,0.90,0.88,false
+advice_unprofessional_wording,general,conformite_metier,conseil,conseil,Conseil formule de maniere non professionnelle,foncer sans trop reflechir|ce contrat est top|pas besoin d'entrer dans trop de details,foncer|top,interdit,high,0.88,0.86,false
+advice_risk_minimization,general,conformite_metier,conseil,conseil,Risques minimises ou performance suggeree,rapporte forcement sur la duree|les risques ne sont pas un vrai sujet|ca finit toujours par remonter,sans risque|garanti|garantie|certain|forcement|toujours,interdit,high,0.90,0.86,false
+advice_above_financial_capacity,general,conformite_metier,conseil,conseil,Formule proposee au-dessus des capacites de l'adherent,represente une part tres importante du revenu disponible|depasse ses capacites actuelles|reduire fortement ses autres depenses,,interdit,high,0.90,0.88,false
+advice_default_formula_due_to_client_confusion,general,conformite_metier,conseil,conseil,Formule par defaut retenue faute d'accompagnement adapte,ne comprand pas bien|ne saisi pas bien|formule par defaut|formule standart du cabinet|pour aller plus vite,par defaut|formule par defaut,interdit,high,0.88,0.86,false
+advice_spelling_quality_issue,general,qualite_redactionnelle,conseil,qualite_redactionnelle,Qualite redactionnelle faible dans la zone conseil,comprand|diferences|plusieur|disponnibilite|detaille|preferer|standart,,alerte,medium,0.75,0.90,false
+forbidden_garanti,general,conformite_metier,beneficiaires|conseil,mot_interdit,Terme interdit detecte,garanti|garantie,,interdit,high,0.90,0.88,false
+forbidden_sans_risque,general,conformite_metier,beneficiaires|conseil,mot_interdit,Terme interdit detecte,sans risque,,interdit,high,0.90,0.88,false
+forbidden_certain,general,conformite_metier,beneficiaires|conseil,mot_interdit,Terme interdit detecte,certain,,interdit,high,0.88,0.88,false
+forbidden_alerte,general,conformite_metier,beneficiaires|conseil,mot_interdit,Terme surveille detecte,forcement|toujours|top|foncer,,alerte,medium,0.75,0.86,false
+forbidden_ambigue,general,conformite_metier,beneficiaires|conseil,mot_interdit,Terme ambigu detecte,proches|par defaut,,ambigue,low,0.65,0.86,false
+SANTE_DIABETE,article9,rgpd_article_9,document,sante,Diabete,diabete|diabetique|diabetiques,insuline|glycemie|glycemique|traitement insulinique,interdit,critical,0.90,0.86,true
+SANTE_PATHOLOGIE,article9,rgpd_article_9,document,sante,Pathologie grave,cancer|tumeur|handicap|depression|vih|sida,chimiotherapie|maladie chronique|affection longue duree,interdit,critical,0.92,0.88,true
+OPINION_POLITIQUE,article9,rgpd_article_9,document,opinions_politiques,Engagement politique,parti politique|militant politique|engagement politique|elu local,syndicat politique|campagne electorale|tract politique,interdit,critical,0.88,0.86,true
+CONVICTION_RELIGIEUSE,article9,rgpd_article_9,document,convictions_religieuses,Convictions religieuses,religion|religieux|musulman|chretien|juif|bouddhiste,pratique religieuse|lieu de culte,interdit,critical,0.88,0.87,true
+APPARTENANCE_SYNDICALE,article9,rgpd_article_9,document,appartenance_syndicale,Appartenance syndicale,syndique|syndicat|delegue syndical,cgt|cfdt|fo|unsa|cfe cgc,interdit,critical,0.90,0.88,true
+ORIENTATION_SEXUELLE,article9,rgpd_article_9,document,orientation_sexuelle,Orientation sexuelle,homosexuel|bisexuel|heterosexuel|orientation sexuelle,vie sexuelle|pacs avec mon compagnon|pacs avec ma compagne,interdit,critical,0.92,0.88,true
+ORIGINE_ETHNIQUE,article9,rgpd_article_9,document,origine_raciale_ethnique,Origine raciale ou ethnique,origine ethnique|origine raciale|race|ethnie,communaute ethnique|minorite ethnique,interdit,critical,0.92,0.88,true
+DONNEES_BIOMETRIQUES,article9,rgpd_article_9,document,donnees_biometriques,Biometrie,empreinte digitale|reconnaissance faciale|biometrie,donnee biometrique|scan iris,interdit,critical,0.92,0.88,true
+DONNEES_GENETIQUES,article9,rgpd_article_9,document,donnees_genetiques,Genetique,adn|genetique|test genetique,mutation genetique|predisposition genetique,interdit,critical,0.92,0.88,true

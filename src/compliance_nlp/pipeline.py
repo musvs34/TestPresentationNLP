@@ -5,13 +5,13 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from .article9 import analyze_article9_section
 from .config import (
     Article9Term,
     ForbiddenTerm,
     GenericDetectionRule,
     SectionDefinition,
     WhitelistTerm,
+    article9_terms_to_generic_rules,
     load_article9_terms,
     load_forbidden_terms,
     load_generic_detection_rules,
@@ -62,17 +62,18 @@ def analyze_text(
     if generic_rules is None:
         generic_rules = load_generic_detection_rules()
     article9_terms = article9_terms or []
-    whitelist_terms = whitelist_terms or []
+    if article9_terms:
+        generic_rules = [*generic_rules, *article9_terms_to_generic_rules(article9_terms)]
+    if whitelist_terms is None:
+        whitelist_terms = load_whitelist_terms()
 
     findings: list[Finding] = []
 
-    findings.extend(analyze_generic_sections(sections, generic_rules))
     findings.extend(
-        analyze_article9_section(
-            "document",
-            sections.get("document", extracted_text),
-            article9_terms=article9_terms,
-            whitelist=whitelist_terms,
+        analyze_generic_sections(
+            sections,
+            generic_rules,
+            whitelist_terms=whitelist_terms,
         )
     )
 
@@ -86,9 +87,10 @@ def analyze_text(
             "finding_count": len(findings),
             "has_findings": bool(findings),
             "forbidden_terms_loaded": len(forbidden_terms),
+            "central_rules_loaded": len(generic_rules),
             "generic_rules_loaded": len(generic_rules),
             "sections_loaded": len(section_definitions),
-            "article9_terms_loaded": len(article9_terms),
+            "legacy_article9_terms_loaded": len(article9_terms),
             "whitelist_terms_loaded": len(whitelist_terms),
         },
     )
@@ -121,7 +123,7 @@ def analyze_file(
     if resolved_section_definitions is None:
         resolved_section_definitions = load_section_definitions(sections_path)
     resolved_article9_terms = article9_terms
-    if resolved_article9_terms is None:
+    if resolved_article9_terms is None and article9_terms_path is not None:
         resolved_article9_terms = load_article9_terms(article9_terms_path)
     resolved_whitelist_terms = whitelist_terms
     if resolved_whitelist_terms is None:
@@ -155,7 +157,7 @@ def analyze_directory(
     forbidden_terms = load_forbidden_terms(forbidden_words_path)
     generic_rules = load_generic_detection_rules(generic_rules_path)
     section_definitions = load_section_definitions(sections_path)
-    article9_terms = load_article9_terms(article9_terms_path)
+    article9_terms = load_article9_terms(article9_terms_path) if article9_terms_path else []
     whitelist_terms = load_whitelist_terms(whitelist_path)
     results = [
         analyze_file(
