@@ -1,2 +1,5 @@
 pypdf>=5.0.0
 pandas>=2.0.0
+spacy>=3.7.0
+spacy-lookups-data>=1.0.5
+# French model: python -m spacy download fr_core_news_sm

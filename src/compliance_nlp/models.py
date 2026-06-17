@@ -20,7 +20,11 @@ class Finding:
     alert_level: str | None = None
     category: str | None = None
     score: float | None = None
+    branch_score: float | None = None
+    generic_score: float | None = None
+    spacy_score: float | None = None
     detection_type: str | None = None
+    detection_engine: str | None = None
     rule_id: str | None = None
     rule_scope: str | None = None
     regulatory_family: str | None = None

@@ -14,6 +14,7 @@ from .config import (
     load_whitelist_terms,
 )
 from .generic import analyze_generic_sections
+from .linguistic import DEFAULT_SPACY_MODEL, analyze_linguistic_sections
 from .models import DocumentAnalysis, Finding
 from .pdf import extract_text_from_pdf
 from .text_utils import compact_text, extract_section, normalize_whitespace
@@ -39,6 +40,16 @@ def _build_sections(
     return sections
 
 
+def _normalize_enabled_branches(enabled_branches: tuple[str, ...] | list[str] | None) -> tuple[str, ...]:
+    if enabled_branches is None:
+        return ("generic",)
+    normalized = tuple(branch.strip().lower() for branch in enabled_branches if branch.strip())
+    unknown = set(normalized) - {"generic", "spacy"}
+    if unknown:
+        raise ValueError(f"Unknown detection branch(es): {', '.join(sorted(unknown))}")
+    return normalized
+
+
 def analyze_text(
     document_name: str,
     source_path: str,
@@ -46,6 +57,8 @@ def analyze_text(
     generic_rules: list[GenericDetectionRule] | None = None,
     section_definitions: list[SectionDefinition] | None = None,
     whitelist_terms: list[WhitelistTerm] | None = None,
+    enabled_branches: tuple[str, ...] | list[str] | None = None,
+    spacy_model: str = DEFAULT_SPACY_MODEL,
 ) -> DocumentAnalysis:
     """Analyze already extracted text."""
 
@@ -55,16 +68,35 @@ def analyze_text(
         generic_rules = load_generic_detection_rules()
     if whitelist_terms is None:
         whitelist_terms = load_whitelist_terms()
+    enabled_branches = _normalize_enabled_branches(enabled_branches)
 
     findings: list[Finding] = []
+    branch_errors: dict[str, str] = {}
 
-    findings.extend(
-        analyze_generic_sections(
-            sections,
-            generic_rules,
-            whitelist_terms=whitelist_terms,
+    if "generic" in enabled_branches:
+        findings.extend(
+            analyze_generic_sections(
+                sections,
+                generic_rules,
+                whitelist_terms=whitelist_terms,
+            )
         )
-    )
+
+    if "spacy" in enabled_branches:
+        try:
+            findings.extend(
+                analyze_linguistic_sections(
+                    sections,
+                    generic_rules,
+                    whitelist_terms=whitelist_terms,
+                    spacy_model=spacy_model,
+                )
+            )
+        except RuntimeError as exc:
+            branch_errors["spacy"] = str(exc)
+
+    generic_findings = [finding for finding in findings if finding.detection_engine == "generic"]
+    spacy_findings = [finding for finding in findings if finding.detection_engine == "spacy"]
 
     return DocumentAnalysis(
         document_name=document_name,
@@ -75,6 +107,19 @@ def analyze_text(
         metadata={
             "finding_count": len(findings),
             "has_findings": bool(findings),
+            "enabled_branches": list(enabled_branches),
+            "spacy_model": spacy_model,
+            "branch_errors": branch_errors,
+            "generic_finding_count": len(generic_findings),
+            "spacy_finding_count": len(spacy_findings),
+            "generic_max_score": max(
+                [finding.generic_score for finding in generic_findings if finding.generic_score is not None],
+                default=None,
+            ),
+            "spacy_max_score": max(
+                [finding.spacy_score for finding in spacy_findings if finding.spacy_score is not None],
+                default=None,
+            ),
             "central_rules_loaded": len(generic_rules),
             "generic_rules_loaded": len(generic_rules),
             "sections_loaded": len(section_definitions),
@@ -91,6 +136,8 @@ def analyze_file(
     generic_rules_path: str | Path | None = None,
     sections_path: str | Path | None = None,
     whitelist_path: str | Path | None = None,
+    enabled_branches: tuple[str, ...] | list[str] | None = None,
+    spacy_model: str = DEFAULT_SPACY_MODEL,
 ) -> DocumentAnalysis:
     """Analyze a single PDF file."""
 
@@ -113,6 +160,8 @@ def analyze_file(
         generic_rules=resolved_generic_rules,
         section_definitions=resolved_section_definitions,
         whitelist_terms=resolved_whitelist_terms,
+        enabled_branches=enabled_branches,
+        spacy_model=spacy_model,
     )
 
 
@@ -122,6 +171,8 @@ def analyze_directory(
     generic_rules_path: str | Path | None = None,
     sections_path: str | Path | None = None,
     whitelist_path: str | Path | None = None,
+    enabled_branches: tuple[str, ...] | list[str] | None = None,
+    spacy_model: str = DEFAULT_SPACY_MODEL,
 ) -> list[DocumentAnalysis]:
     """Analyze every PDF in a directory and optionally persist results."""
 
@@ -136,6 +187,8 @@ def analyze_directory(
             generic_rules=generic_rules,
             section_definitions=section_definitions,
             whitelist_terms=whitelist_terms,
+            enabled_branches=enabled_branches,
+            spacy_model=spacy_model,
         )
         for pdf_path in pdf_files
     ]

@@ -90,3 +90,23 @@ def test_pipeline_uses_default_generic_rules() -> None:
     rule_ids = {finding.rule_id for finding in result.findings}
     assert "beneficiary_clause_imprecise" in rule_ids
     assert "forbidden_sans_risque" in rule_ids
+    assert {finding.detection_engine for finding in result.findings} == {"generic"}
+
+
+def test_pipeline_can_enable_spacy_branch_without_breaking_generic() -> None:
+    text = """
+    9. Conseil et Recommandation
+    Ce placement est sans risque.
+    10. Signatures
+    """
+
+    result = analyze_text(
+        "sample.pdf",
+        "sample.pdf",
+        text,
+        enabled_branches=("generic", "spacy"),
+        spacy_model="modele_francais_absent",
+    )
+
+    assert any(finding.detection_engine == "generic" for finding in result.findings)
+    assert "spacy" in result.metadata["branch_errors"]
