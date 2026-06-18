@@ -23,6 +23,7 @@ class Finding:
     branch_score: float | None = None
     generic_score: float | None = None
     spacy_score: float | None = None
+    gliner_score: float | None = None
     detection_type: str | None = None
     detection_engine: str | None = None
     rule_id: str | None = None

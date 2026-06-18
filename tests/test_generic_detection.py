@@ -110,3 +110,24 @@ def test_pipeline_can_enable_spacy_branch_without_breaking_generic() -> None:
 
     assert any(finding.detection_engine == "generic" for finding in result.findings)
     assert "spacy" in result.metadata["branch_errors"]
+
+
+def test_pipeline_can_enable_gliner_branch_without_breaking_generic() -> None:
+    text = """
+    9. Conseil et Recommandation
+    Ce placement est sans risque.
+    10. Signatures
+    """
+
+    result = analyze_text(
+        "sample.pdf",
+        "sample.pdf",
+        text,
+        enabled_branches=("generic", "gliner"),
+        gliner_model="modele_gliner_absent",
+        gliner_labels=("donnee de sante",),
+    )
+
+    assert any(finding.detection_engine == "generic" for finding in result.findings)
+    assert "gliner" in result.metadata["branch_errors"]
+    assert result.metadata["gliner_labels"] == ["donnee de sante"]

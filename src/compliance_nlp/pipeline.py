@@ -14,6 +14,12 @@ from .config import (
     load_whitelist_terms,
 )
 from .generic import analyze_generic_sections
+from .gliner_detector import (
+    DEFAULT_GLINER_LABELS,
+    DEFAULT_GLINER_MODEL,
+    DEFAULT_GLINER_THRESHOLD,
+    analyze_gliner_sections,
+)
 from .linguistic import DEFAULT_SPACY_MODEL, analyze_linguistic_sections
 from .models import DocumentAnalysis, Finding
 from .pdf import extract_text_from_pdf
@@ -44,7 +50,7 @@ def _normalize_enabled_branches(enabled_branches: tuple[str, ...] | list[str] | 
     if enabled_branches is None:
         return ("generic",)
     normalized = tuple(branch.strip().lower() for branch in enabled_branches if branch.strip())
-    unknown = set(normalized) - {"generic", "spacy"}
+    unknown = set(normalized) - {"generic", "spacy", "gliner"}
     if unknown:
         raise ValueError(f"Unknown detection branch(es): {', '.join(sorted(unknown))}")
     return normalized
@@ -59,6 +65,9 @@ def analyze_text(
     whitelist_terms: list[WhitelistTerm] | None = None,
     enabled_branches: tuple[str, ...] | list[str] | None = None,
     spacy_model: str = DEFAULT_SPACY_MODEL,
+    gliner_model: str = DEFAULT_GLINER_MODEL,
+    gliner_labels: tuple[str, ...] | list[str] | None = None,
+    gliner_threshold: float = DEFAULT_GLINER_THRESHOLD,
 ) -> DocumentAnalysis:
     """Analyze already extracted text."""
 
@@ -95,8 +104,23 @@ def analyze_text(
         except RuntimeError as exc:
             branch_errors["spacy"] = str(exc)
 
+    if "gliner" in enabled_branches:
+        try:
+            findings.extend(
+                analyze_gliner_sections(
+                    sections,
+                    labels=gliner_labels,
+                    threshold=gliner_threshold,
+                    model_name=gliner_model,
+                )
+            )
+        except RuntimeError as exc:
+            branch_errors["gliner"] = str(exc)
+
     generic_findings = [finding for finding in findings if finding.detection_engine == "generic"]
     spacy_findings = [finding for finding in findings if finding.detection_engine == "spacy"]
+    gliner_findings = [finding for finding in findings if finding.detection_engine == "gliner"]
+    resolved_gliner_labels = list(gliner_labels or DEFAULT_GLINER_LABELS)
 
     return DocumentAnalysis(
         document_name=document_name,
@@ -109,15 +133,23 @@ def analyze_text(
             "has_findings": bool(findings),
             "enabled_branches": list(enabled_branches),
             "spacy_model": spacy_model,
+            "gliner_model": gliner_model,
+            "gliner_labels": resolved_gliner_labels,
+            "gliner_threshold": gliner_threshold,
             "branch_errors": branch_errors,
             "generic_finding_count": len(generic_findings),
             "spacy_finding_count": len(spacy_findings),
+            "gliner_finding_count": len(gliner_findings),
             "generic_max_score": max(
                 [finding.generic_score for finding in generic_findings if finding.generic_score is not None],
                 default=None,
             ),
             "spacy_max_score": max(
                 [finding.spacy_score for finding in spacy_findings if finding.spacy_score is not None],
+                default=None,
+            ),
+            "gliner_max_score": max(
+                [finding.gliner_score for finding in gliner_findings if finding.gliner_score is not None],
                 default=None,
             ),
             "central_rules_loaded": len(generic_rules),
@@ -138,6 +170,9 @@ def analyze_file(
     whitelist_path: str | Path | None = None,
     enabled_branches: tuple[str, ...] | list[str] | None = None,
     spacy_model: str = DEFAULT_SPACY_MODEL,
+    gliner_model: str = DEFAULT_GLINER_MODEL,
+    gliner_labels: tuple[str, ...] | list[str] | None = None,
+    gliner_threshold: float = DEFAULT_GLINER_THRESHOLD,
 ) -> DocumentAnalysis:
     """Analyze a single PDF file."""
 
@@ -162,6 +197,9 @@ def analyze_file(
         whitelist_terms=resolved_whitelist_terms,
         enabled_branches=enabled_branches,
         spacy_model=spacy_model,
+        gliner_model=gliner_model,
+        gliner_labels=gliner_labels,
+        gliner_threshold=gliner_threshold,
     )
 
 
@@ -173,6 +211,9 @@ def analyze_directory(
     whitelist_path: str | Path | None = None,
     enabled_branches: tuple[str, ...] | list[str] | None = None,
     spacy_model: str = DEFAULT_SPACY_MODEL,
+    gliner_model: str = DEFAULT_GLINER_MODEL,
+    gliner_labels: tuple[str, ...] | list[str] | None = None,
+    gliner_threshold: float = DEFAULT_GLINER_THRESHOLD,
 ) -> list[DocumentAnalysis]:
     """Analyze every PDF in a directory and optionally persist results."""
 
@@ -189,6 +230,9 @@ def analyze_directory(
             whitelist_terms=whitelist_terms,
             enabled_branches=enabled_branches,
             spacy_model=spacy_model,
+            gliner_model=gliner_model,
+            gliner_labels=gliner_labels,
+            gliner_threshold=gliner_threshold,
         )
         for pdf_path in pdf_files
     ]
