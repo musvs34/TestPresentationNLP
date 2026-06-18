@@ -2,13 +2,18 @@
 
 from __future__ import annotations
 
+import os
 from functools import lru_cache
+from pathlib import Path
 
 from .models import Finding
 from .text_utils import compact_text, normalize_for_matching, shorten
 
 
-DEFAULT_GLINER_MODEL = "urchade/gliner_multi-v2.1"
+DEFAULT_MODEL_CACHE_DIR = Path(os.environ.get("COMPLIANCE_NLP_MODEL_CACHE", r"D:\Workspaces\ModelCache"))
+DEFAULT_MODEL_STORE_DIR = Path(os.environ.get("COMPLIANCE_NLP_MODEL_STORE", r"D:\Workspaces\modelStore"))
+DEFAULT_GLINER_SOURCE_MODEL = "urchade/gliner_multi-v2.1"
+DEFAULT_GLINER_MODEL = str(DEFAULT_MODEL_STORE_DIR / "gliner_multi-v2.1")
 DEFAULT_GLINER_THRESHOLD = 0.50
 DEFAULT_GLINER_LABELS = (
     "donnee de sante",
@@ -25,8 +30,18 @@ DEFAULT_GLINER_LABELS = (
 )
 
 
-@lru_cache(maxsize=2)
-def load_gliner_model(model_name: str = DEFAULT_GLINER_MODEL):  # type: ignore[no-untyped-def]
+def _is_local_model_path(model_name: str) -> bool:
+    path = Path(model_name)
+    return path.is_absolute() or os.sep in model_name or (os.altsep is not None and os.altsep in model_name)
+
+
+@lru_cache(maxsize=4)
+def load_gliner_model(  # type: ignore[no-untyped-def]
+    model_name: str = DEFAULT_GLINER_MODEL,
+    cache_dir: str | None = str(DEFAULT_MODEL_CACHE_DIR),
+    source_model: str = DEFAULT_GLINER_SOURCE_MODEL,
+    local_files_only: bool = False,
+):
     """Load and cache the configured GLiNER model."""
 
     try:
@@ -38,7 +53,31 @@ def load_gliner_model(model_name: str = DEFAULT_GLINER_MODEL):  # type: ignore[n
         ) from exc
 
     try:
-        return GLiNER.from_pretrained(model_name)
+        if _is_local_model_path(model_name):
+            local_path = Path(model_name)
+            if local_path.exists():
+                return GLiNER.from_pretrained(
+                    str(local_path),
+                    cache_dir=cache_dir,
+                    local_files_only=True,
+                )
+            if local_files_only:
+                raise RuntimeError(f"Local GLiNER model path does not exist: {local_path}")
+
+            model = GLiNER.from_pretrained(
+                source_model,
+                cache_dir=cache_dir,
+                local_files_only=False,
+            )
+            local_path.parent.mkdir(parents=True, exist_ok=True)
+            model.save_pretrained(str(local_path))
+            return model
+
+        return GLiNER.from_pretrained(
+            model_name,
+            cache_dir=cache_dir,
+            local_files_only=local_files_only,
+        )
     except Exception as exc:  # pragma: no cover - model download/local cache dependent
         raise RuntimeError(
             f"The GLiNER branch could not load model '{model_name}'. "
@@ -63,6 +102,9 @@ def analyze_gliner_section(
     labels: list[str] | tuple[str, ...] | None = None,
     threshold: float = DEFAULT_GLINER_THRESHOLD,
     model_name: str = DEFAULT_GLINER_MODEL,
+    cache_dir: str | None = str(DEFAULT_MODEL_CACHE_DIR),
+    source_model: str = DEFAULT_GLINER_SOURCE_MODEL,
+    local_files_only: bool = False,
     model=None,  # type: ignore[no-untyped-def]
 ) -> list[Finding]:
     """Apply GLiNER zero-shot entity recognition to one section."""
@@ -75,7 +117,7 @@ def analyze_gliner_section(
     if not resolved_labels:
         return []
 
-    model = model or load_gliner_model(model_name)
+    model = model or load_gliner_model(model_name, cache_dir, source_model, local_files_only)
     entities = model.predict_entities(
         compact_section,
         list(resolved_labels),
@@ -122,10 +164,13 @@ def analyze_gliner_sections(
     labels: list[str] | tuple[str, ...] | None = None,
     threshold: float = DEFAULT_GLINER_THRESHOLD,
     model_name: str = DEFAULT_GLINER_MODEL,
+    cache_dir: str | None = str(DEFAULT_MODEL_CACHE_DIR),
+    source_model: str = DEFAULT_GLINER_SOURCE_MODEL,
+    local_files_only: bool = False,
 ) -> list[Finding]:
     """Apply GLiNER to all available sections."""
 
-    model = load_gliner_model(model_name)
+    model = load_gliner_model(model_name, cache_dir, source_model, local_files_only)
     findings: list[Finding] = []
     for section_name, section_text in sections.items():
         findings.extend(
@@ -135,6 +180,9 @@ def analyze_gliner_sections(
                 labels=labels,
                 threshold=threshold,
                 model_name=model_name,
+                cache_dir=cache_dir,
+                source_model=source_model,
+                local_files_only=local_files_only,
                 model=model,
             )
         )

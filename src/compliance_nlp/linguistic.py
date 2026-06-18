@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import os
 import re
 from dataclasses import dataclass
 from difflib import SequenceMatcher
 from functools import lru_cache
+from pathlib import Path
 from typing import Any
 
 from .config import GenericDetectionRule, WhitelistTerm
@@ -13,7 +15,8 @@ from .models import Finding
 from .text_utils import compact_text, normalize_for_matching, shorten
 
 
-DEFAULT_SPACY_MODEL = "fr_core_news_sm"
+DEFAULT_MODEL_STORE_DIR = Path(os.environ.get("COMPLIANCE_NLP_MODEL_STORE", r"D:\Workspaces\modelStore"))
+DEFAULT_SPACY_MODEL = str(DEFAULT_MODEL_STORE_DIR / "fr_core_news_sm")
 
 
 @dataclass(frozen=True, slots=True)

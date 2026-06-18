@@ -17,7 +17,9 @@ from .generic import analyze_generic_sections
 from .gliner_detector import (
     DEFAULT_GLINER_LABELS,
     DEFAULT_GLINER_MODEL,
+    DEFAULT_GLINER_SOURCE_MODEL,
     DEFAULT_GLINER_THRESHOLD,
+    DEFAULT_MODEL_CACHE_DIR,
     analyze_gliner_sections,
 )
 from .linguistic import DEFAULT_SPACY_MODEL, analyze_linguistic_sections
@@ -66,8 +68,11 @@ def analyze_text(
     enabled_branches: tuple[str, ...] | list[str] | None = None,
     spacy_model: str = DEFAULT_SPACY_MODEL,
     gliner_model: str = DEFAULT_GLINER_MODEL,
+    gliner_cache_dir: str | None = str(DEFAULT_MODEL_CACHE_DIR),
+    gliner_source_model: str = DEFAULT_GLINER_SOURCE_MODEL,
     gliner_labels: tuple[str, ...] | list[str] | None = None,
     gliner_threshold: float = DEFAULT_GLINER_THRESHOLD,
+    gliner_local_files_only: bool = False,
 ) -> DocumentAnalysis:
     """Analyze already extracted text."""
 
@@ -112,6 +117,9 @@ def analyze_text(
                     labels=gliner_labels,
                     threshold=gliner_threshold,
                     model_name=gliner_model,
+                    cache_dir=gliner_cache_dir,
+                    source_model=gliner_source_model,
+                    local_files_only=gliner_local_files_only,
                 )
             )
         except RuntimeError as exc:
@@ -134,8 +142,11 @@ def analyze_text(
             "enabled_branches": list(enabled_branches),
             "spacy_model": spacy_model,
             "gliner_model": gliner_model,
+            "gliner_cache_dir": gliner_cache_dir,
+            "gliner_source_model": gliner_source_model,
             "gliner_labels": resolved_gliner_labels,
             "gliner_threshold": gliner_threshold,
+            "gliner_local_files_only": gliner_local_files_only,
             "branch_errors": branch_errors,
             "generic_finding_count": len(generic_findings),
             "spacy_finding_count": len(spacy_findings),
@@ -171,8 +182,11 @@ def analyze_file(
     enabled_branches: tuple[str, ...] | list[str] | None = None,
     spacy_model: str = DEFAULT_SPACY_MODEL,
     gliner_model: str = DEFAULT_GLINER_MODEL,
+    gliner_cache_dir: str | None = str(DEFAULT_MODEL_CACHE_DIR),
+    gliner_source_model: str = DEFAULT_GLINER_SOURCE_MODEL,
     gliner_labels: tuple[str, ...] | list[str] | None = None,
     gliner_threshold: float = DEFAULT_GLINER_THRESHOLD,
+    gliner_local_files_only: bool = False,
 ) -> DocumentAnalysis:
     """Analyze a single PDF file."""
 
@@ -198,8 +212,11 @@ def analyze_file(
         enabled_branches=enabled_branches,
         spacy_model=spacy_model,
         gliner_model=gliner_model,
+        gliner_cache_dir=gliner_cache_dir,
+        gliner_source_model=gliner_source_model,
         gliner_labels=gliner_labels,
         gliner_threshold=gliner_threshold,
+        gliner_local_files_only=gliner_local_files_only,
     )
 
 
@@ -212,8 +229,11 @@ def analyze_directory(
     enabled_branches: tuple[str, ...] | list[str] | None = None,
     spacy_model: str = DEFAULT_SPACY_MODEL,
     gliner_model: str = DEFAULT_GLINER_MODEL,
+    gliner_cache_dir: str | None = str(DEFAULT_MODEL_CACHE_DIR),
+    gliner_source_model: str = DEFAULT_GLINER_SOURCE_MODEL,
     gliner_labels: tuple[str, ...] | list[str] | None = None,
     gliner_threshold: float = DEFAULT_GLINER_THRESHOLD,
+    gliner_local_files_only: bool = False,
 ) -> list[DocumentAnalysis]:
     """Analyze every PDF in a directory and optionally persist results."""
 
@@ -231,8 +251,11 @@ def analyze_directory(
             enabled_branches=enabled_branches,
             spacy_model=spacy_model,
             gliner_model=gliner_model,
+            gliner_cache_dir=gliner_cache_dir,
+            gliner_source_model=gliner_source_model,
             gliner_labels=gliner_labels,
             gliner_threshold=gliner_threshold,
+            gliner_local_files_only=gliner_local_files_only,
         )
         for pdf_path in pdf_files
     ]
