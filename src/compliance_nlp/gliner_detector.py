@@ -17,6 +17,11 @@ DEFAULT_GLINER_MODEL = str(DEFAULT_MODEL_STORE_DIR / "gliner_multi-v2.1")
 DEFAULT_GLINER_THRESHOLD = 0.50
 DEFAULT_GLINER_LABELS = (
     "donnee de sante",
+    "maladie",
+    "pathologie",
+    "etat de sante",
+    "condition medicale",
+    "probleme de sante",
     "opinion politique",
     "conviction religieuse",
     "appartenance syndicale",

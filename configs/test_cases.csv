@@ -1,0 +1,46 @@
+text,control_family,comment
+"7. Beneficiaires
+Je designe mes proches par parts egales.
+8. Declarations
+9. Conseil et Recommandation
+Texte neutre.
+10. Signatures",generic,Clause beneficiaire imprecise dans la section beneficiaires.
+"7. Beneficiaires
+Clause neutre.
+8. Declarations
+9. Conseil et Recommandation
+Ce placement est sans risque pour le client.
+10. Signatures",generic,Mot compose interdit dans la section conseil.
+"7. Beneficiaires
+Clause neutre.
+8. Declarations
+9. Conseil et Recommandation
+Le conseiller indique qu'il faut foncer.
+10. Signatures",generic,Synonyme configure pour conseil.
+"7. Beneficiaires
+Clause neutre.
+8. Declarations
+9. Conseil et Recommandation
+Les rendements sont garantis par la compagnie.
+10. Signatures",generic,Variante avec meme racine/lemme autour de garanti.
+"7. Beneficiaires
+Clause neutre.
+8. Declarations
+9. Conseil et Recommandation
+Le capital est garentie par le contrat.
+10. Signatures",generic,Faute volontaire sur garantie.
+Le client indique etre diabetique depuis plusieurs annees.,article9,Terme exact Article 9 dans le document complet.
+Observation libre : traitement par insuline signale par l'adherent.,article9,Synonyme Article 9.
+Les informations indiquent des antecedents diabetiques.,article9,Variante autour de diabetique.
+Le souscripteur precise etre diabettique.,article9,Faute volontaire Article 9.
+La sante financiere du contrat est correcte.,article9,Expression attendue en whitelist.
+contact 06-05.01 0404,article9,Tnumerode telephone
+joignable test@yahoo.Fr,article9,email
+il aime bien courir à l'extreme droite de la piste,article9,fausse alerte opinion politique
+il siege au conseil et a une vison à l'extrme droite,article9,opinion politique
+"7. Beneficiaires
+Clause neutre.
+8. Declarations
+9. Conseil et Recommandation
+Le client souhaite modifier son adresse postale.
+10. Signatures",generic,Phrase neutre.
