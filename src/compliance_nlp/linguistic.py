@@ -16,7 +16,7 @@ from .text_utils import compact_text, normalize_for_matching, shorten
 
 
 DEFAULT_MODEL_STORE_DIR = Path(os.environ.get("COMPLIANCE_NLP_MODEL_STORE", r"D:\Workspaces\modelStore"))
-DEFAULT_SPACY_MODEL = str(DEFAULT_MODEL_STORE_DIR / "fr_core_news_sm")
+DEFAULT_SPACY_MODEL = str(DEFAULT_MODEL_STORE_DIR / "fr_core_news_md")
 DEFAULT_SPACY_SYNONYMS_FILE = str(DEFAULT_SPACY_SYNONYMS_PATH)
 
 

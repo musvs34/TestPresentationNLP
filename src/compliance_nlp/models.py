@@ -24,6 +24,7 @@ class Finding:
     generic_score: float | None = None
     spacy_score: float | None = None
     gliner_score: float | None = None
+    regex_score: float | None = None
     detection_type: str | None = None
     detection_engine: str | None = None
     rule_id: str | None = None

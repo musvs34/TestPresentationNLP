@@ -161,3 +161,17 @@ def test_pipeline_can_enable_gliner_branch_without_breaking_generic() -> None:
     assert any(finding.detection_engine == "generic" for finding in result.findings)
     assert "gliner" in result.metadata["branch_errors"]
     assert result.metadata["gliner_labels"] == ["donnee de sante"]
+
+
+def test_pipeline_can_enable_regex_branch() -> None:
+    result = analyze_text(
+        "sample.pdf",
+        "sample.pdf",
+        "Contact 06-05.01 0404 et joignable test@yahoo.Fr.",
+        enabled_branches=("regex",),
+    )
+
+    assert result.metadata["regex_finding_count"] == 2
+    assert result.metadata["regex_max_score"] == 0.95
+    assert {finding.rule_id for finding in result.findings} == {"EMAIL_ADDRESS", "PHONE_NUMBER_FR"}
+    assert {finding.detection_engine for finding in result.findings} == {"regex"}

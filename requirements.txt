@@ -3,4 +3,4 @@ pandas>=2.0.0
 spacy>=3.7.0
 spacy-lookups-data>=1.0.5
 gliner>=0.2.0
-# French model: python -m spacy download fr_core_news_sm
+# French model: install fr_core_news_md and store it in D:\Workspaces\modelStore\fr_core_news_md

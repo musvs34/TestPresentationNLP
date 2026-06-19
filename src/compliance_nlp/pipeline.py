@@ -25,6 +25,7 @@ from .gliner_detector import (
 from .linguistic import DEFAULT_SPACY_MODEL, DEFAULT_SPACY_SYNONYMS_FILE, analyze_linguistic_sections
 from .models import DocumentAnalysis, Finding
 from .pdf import extract_text_from_pdf
+from .regex_detector import analyze_regex_sections
 from .text_utils import compact_text, extract_section, normalize_whitespace
 
 
@@ -52,7 +53,7 @@ def _normalize_enabled_branches(enabled_branches: tuple[str, ...] | list[str] | 
     if enabled_branches is None:
         return ("generic",)
     normalized = tuple(branch.strip().lower() for branch in enabled_branches if branch.strip())
-    unknown = set(normalized) - {"generic", "spacy", "gliner"}
+    unknown = set(normalized) - {"generic", "spacy", "gliner", "regex"}
     if unknown:
         raise ValueError(f"Unknown detection branch(es): {', '.join(sorted(unknown))}")
     return normalized
@@ -127,9 +128,13 @@ def analyze_text(
         except RuntimeError as exc:
             branch_errors["gliner"] = str(exc)
 
+    if "regex" in enabled_branches:
+        findings.extend(analyze_regex_sections(sections))
+
     generic_findings = [finding for finding in findings if finding.detection_engine == "generic"]
     spacy_findings = [finding for finding in findings if finding.detection_engine == "spacy"]
     gliner_findings = [finding for finding in findings if finding.detection_engine == "gliner"]
+    regex_findings = [finding for finding in findings if finding.detection_engine == "regex"]
     resolved_gliner_labels = list(gliner_labels or DEFAULT_GLINER_LABELS)
 
     return DocumentAnalysis(
@@ -154,6 +159,7 @@ def analyze_text(
             "generic_finding_count": len(generic_findings),
             "spacy_finding_count": len(spacy_findings),
             "gliner_finding_count": len(gliner_findings),
+            "regex_finding_count": len(regex_findings),
             "generic_max_score": max(
                 [finding.generic_score for finding in generic_findings if finding.generic_score is not None],
                 default=None,
@@ -164,6 +170,10 @@ def analyze_text(
             ),
             "gliner_max_score": max(
                 [finding.gliner_score for finding in gliner_findings if finding.gliner_score is not None],
+                default=None,
+            ),
+            "regex_max_score": max(
+                [finding.regex_score for finding in regex_findings if finding.regex_score is not None],
                 default=None,
             ),
             "central_rules_loaded": len(generic_rules),
