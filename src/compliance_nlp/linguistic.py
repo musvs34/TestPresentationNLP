@@ -10,13 +10,14 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-from .config import GenericDetectionRule, WhitelistTerm
+from .config import DEFAULT_SPACY_SYNONYMS_PATH, GenericDetectionRule, WhitelistTerm, load_spacy_synonym_map
 from .models import Finding
 from .text_utils import compact_text, normalize_for_matching, shorten
 
 
 DEFAULT_MODEL_STORE_DIR = Path(os.environ.get("COMPLIANCE_NLP_MODEL_STORE", r"D:\Workspaces\modelStore"))
 DEFAULT_SPACY_MODEL = str(DEFAULT_MODEL_STORE_DIR / "fr_core_news_sm")
+DEFAULT_SPACY_SYNONYMS_FILE = str(DEFAULT_SPACY_SYNONYMS_PATH)
 
 
 @dataclass(frozen=True, slots=True)
@@ -240,10 +241,42 @@ def _pick_best(
     return max(valid_candidates, key=lambda candidate: candidate.score)
 
 
+@lru_cache(maxsize=8)
+def load_linguistic_synonym_map(
+    synonyms_path: str = DEFAULT_SPACY_SYNONYMS_FILE,
+) -> dict[str, tuple[str, ...]]:
+    """Load synonym candidates used by the spaCy branch."""
+
+    return load_spacy_synonym_map(synonyms_path)
+
+
+def _synonyms_for_rule_terms(
+    rule: GenericDetectionRule,
+    synonym_map: dict[str, tuple[str, ...]],
+) -> tuple[str, ...]:
+    """Resolve proposed synonyms from the rule's forbidden terms only."""
+
+    rule_terms = {normalize_for_matching(term) for term in rule.terms}
+    seen: set[str] = set()
+    resolved: list[str] = []
+
+    for term in rule.terms:
+        normalized_term = normalize_for_matching(term)
+        for synonym in synonym_map.get(normalized_term, ()):
+            normalized_synonym = normalize_for_matching(synonym)
+            if not normalized_synonym or normalized_synonym in rule_terms or normalized_synonym in seen:
+                continue
+            seen.add(normalized_synonym)
+            resolved.append(normalized_synonym)
+
+    return tuple(resolved)
+
+
 def _best_match_for_rule(
     section_text: str,
     rule: GenericDetectionRule,
     nlp: Any,
+    synonym_map: dict[str, tuple[str, ...]],
 ) -> LinguisticMatch | None:
     doc = nlp(section_text)
     tokens = _content_tokens(doc)
@@ -259,7 +292,7 @@ def _best_match_for_rule(
         ]
         best_match = _pick_best(best_match, candidates)
 
-    for synonym in rule.synonyms:
+    for synonym in _synonyms_for_rule_terms(rule, synonym_map):
         candidates = [
             _find_exact_match(normalized_section, synonym, True, rule.base_score),
             _find_lemma_match(tokens, synonym, nlp, _score(rule.base_score, -0.04)),
@@ -278,6 +311,8 @@ def analyze_linguistic_section(
     whitelist_terms: list[WhitelistTerm] | None = None,
     nlp: Any | None = None,
     spacy_model: str = DEFAULT_SPACY_MODEL,
+    spacy_synonyms_path: str = DEFAULT_SPACY_SYNONYMS_FILE,
+    synonym_map: dict[str, tuple[str, ...]] | None = None,
 ) -> list[Finding]:
     """Apply the optional spaCy branch to one section."""
 
@@ -287,13 +322,14 @@ def analyze_linguistic_section(
         return findings
 
     nlp = nlp or load_spacy_model(spacy_model)
+    synonym_map = synonym_map if synonym_map is not None else load_linguistic_synonym_map(spacy_synonyms_path)
     scoped_rules = [
         rule for rule in generic_rules if section_name in rule.section_scope or "*" in rule.section_scope
     ]
 
     whitelist_terms = whitelist_terms or []
     for rule in scoped_rules:
-        match = _best_match_for_rule(compact_section, rule, nlp)
+        match = _best_match_for_rule(compact_section, rule, nlp, synonym_map)
         if match is None:
             continue
         if rule.applies_whitelist and _is_whitelisted(
@@ -338,10 +374,12 @@ def analyze_linguistic_sections(
     generic_rules: list[GenericDetectionRule],
     whitelist_terms: list[WhitelistTerm] | None = None,
     spacy_model: str = DEFAULT_SPACY_MODEL,
+    spacy_synonyms_path: str = DEFAULT_SPACY_SYNONYMS_FILE,
 ) -> list[Finding]:
     """Apply the optional spaCy branch to all available sections."""
 
     nlp = load_spacy_model(spacy_model)
+    synonym_map = load_linguistic_synonym_map(spacy_synonyms_path)
     findings: list[Finding] = []
     for section_name, section_text in sections.items():
         findings.extend(
@@ -352,6 +390,8 @@ def analyze_linguistic_sections(
                 whitelist_terms=whitelist_terms,
                 nlp=nlp,
                 spacy_model=spacy_model,
+                spacy_synonyms_path=spacy_synonyms_path,
+                synonym_map=synonym_map,
             )
         )
     return findings

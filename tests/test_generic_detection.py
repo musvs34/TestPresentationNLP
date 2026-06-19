@@ -1,7 +1,8 @@
 from pathlib import Path
 
-from compliance_nlp.config import load_generic_detection_rules
+from compliance_nlp.config import load_generic_detection_rules, load_spacy_synonym_map
 from compliance_nlp.generic import analyze_generic_section
+from compliance_nlp.linguistic import _synonyms_for_rule_terms
 from compliance_nlp.pipeline import analyze_text
 
 
@@ -73,6 +74,35 @@ def test_generic_detector_matches_spelling_error(tmp_path: Path) -> None:
     assert findings[0].rule_id == "GEN_FORBIDDEN"
     assert findings[0].detection_type == "fuzzy"
     assert findings[0].matched_term == "garentie"
+
+
+def test_loads_spacy_synonyms_from_separate_file(tmp_path: Path) -> None:
+    csv_path = tmp_path / "spacy_synonyms.csv"
+    csv_path.write_text(
+        "term,synonyms\n"
+        "garantie,assure|certain\n",
+        encoding="utf-8",
+    )
+
+    synonym_map = load_spacy_synonym_map(csv_path)
+
+    assert synonym_map == {"garantie": ("assure", "certain")}
+
+
+def test_spacy_synonyms_are_derived_from_rule_terms_not_rule_synonyms(tmp_path: Path) -> None:
+    rules_path = tmp_path / "generic_detection_rules.csv"
+    _write_generic_rules(rules_path)
+    rules = load_generic_detection_rules(rules_path)
+    synonym_map = {"garantie": ("assure", "certain")}
+
+    resolved = _synonyms_for_rule_terms(rules[0], synonym_map)
+
+    assert resolved == ("assure", "certain")
+
+    synonym_map = {}
+    resolved = _synonyms_for_rule_terms(rules[0], synonym_map)
+
+    assert resolved == ()
 
 
 def test_pipeline_uses_default_generic_rules() -> None:

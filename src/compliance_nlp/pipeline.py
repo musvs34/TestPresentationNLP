@@ -22,7 +22,7 @@ from .gliner_detector import (
     DEFAULT_MODEL_CACHE_DIR,
     analyze_gliner_sections,
 )
-from .linguistic import DEFAULT_SPACY_MODEL, analyze_linguistic_sections
+from .linguistic import DEFAULT_SPACY_MODEL, DEFAULT_SPACY_SYNONYMS_FILE, analyze_linguistic_sections
 from .models import DocumentAnalysis, Finding
 from .pdf import extract_text_from_pdf
 from .text_utils import compact_text, extract_section, normalize_whitespace
@@ -67,6 +67,7 @@ def analyze_text(
     whitelist_terms: list[WhitelistTerm] | None = None,
     enabled_branches: tuple[str, ...] | list[str] | None = None,
     spacy_model: str = DEFAULT_SPACY_MODEL,
+    spacy_synonyms_path: str = DEFAULT_SPACY_SYNONYMS_FILE,
     gliner_model: str = DEFAULT_GLINER_MODEL,
     gliner_cache_dir: str | None = str(DEFAULT_MODEL_CACHE_DIR),
     gliner_source_model: str = DEFAULT_GLINER_SOURCE_MODEL,
@@ -104,6 +105,7 @@ def analyze_text(
                     generic_rules,
                     whitelist_terms=whitelist_terms,
                     spacy_model=spacy_model,
+                    spacy_synonyms_path=spacy_synonyms_path,
                 )
             )
         except RuntimeError as exc:
@@ -141,6 +143,7 @@ def analyze_text(
             "has_findings": bool(findings),
             "enabled_branches": list(enabled_branches),
             "spacy_model": spacy_model,
+            "spacy_synonyms_path": spacy_synonyms_path,
             "gliner_model": gliner_model,
             "gliner_cache_dir": gliner_cache_dir,
             "gliner_source_model": gliner_source_model,
@@ -181,6 +184,7 @@ def analyze_file(
     whitelist_path: str | Path | None = None,
     enabled_branches: tuple[str, ...] | list[str] | None = None,
     spacy_model: str = DEFAULT_SPACY_MODEL,
+    spacy_synonyms_path: str = DEFAULT_SPACY_SYNONYMS_FILE,
     gliner_model: str = DEFAULT_GLINER_MODEL,
     gliner_cache_dir: str | None = str(DEFAULT_MODEL_CACHE_DIR),
     gliner_source_model: str = DEFAULT_GLINER_SOURCE_MODEL,
@@ -211,6 +215,7 @@ def analyze_file(
         whitelist_terms=resolved_whitelist_terms,
         enabled_branches=enabled_branches,
         spacy_model=spacy_model,
+        spacy_synonyms_path=spacy_synonyms_path,
         gliner_model=gliner_model,
         gliner_cache_dir=gliner_cache_dir,
         gliner_source_model=gliner_source_model,
@@ -228,6 +233,7 @@ def analyze_directory(
     whitelist_path: str | Path | None = None,
     enabled_branches: tuple[str, ...] | list[str] | None = None,
     spacy_model: str = DEFAULT_SPACY_MODEL,
+    spacy_synonyms_path: str = DEFAULT_SPACY_SYNONYMS_FILE,
     gliner_model: str = DEFAULT_GLINER_MODEL,
     gliner_cache_dir: str | None = str(DEFAULT_MODEL_CACHE_DIR),
     gliner_source_model: str = DEFAULT_GLINER_SOURCE_MODEL,
@@ -250,6 +256,7 @@ def analyze_directory(
             whitelist_terms=whitelist_terms,
             enabled_branches=enabled_branches,
             spacy_model=spacy_model,
+            spacy_synonyms_path=spacy_synonyms_path,
             gliner_model=gliner_model,
             gliner_cache_dir=gliner_cache_dir,
             gliner_source_model=gliner_source_model,

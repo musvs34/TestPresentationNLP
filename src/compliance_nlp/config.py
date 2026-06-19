@@ -15,6 +15,8 @@ DEFAULT_SECTIONS_PATH = Path(__file__).resolve().parents[2] / "configs" / "secti
 DEFAULT_GENERIC_RULES_PATH = (
     Path(__file__).resolve().parents[2] / "configs" / "generic_detection_rules.csv"
 )
+DEFAULT_SPACY_SYNONYMS_PATH = Path(__file__).resolve().parents[2] / "configs" / "spacy_synonyms.csv"
+
 
 @dataclass(frozen=True, slots=True)
 class WhitelistTerm:
@@ -86,6 +88,25 @@ def load_whitelist_terms(csv_path: str | Path | None = None) -> list[WhitelistTe
                 terms.append(WhitelistTerm(expression=expression, reason=reason))
 
     return terms
+
+
+def load_spacy_synonym_map(csv_path: str | Path | None = None) -> dict[str, tuple[str, ...]]:
+    """Load proposed synonym candidates for the spaCy branch."""
+
+    path = Path(csv_path) if csv_path is not None else DEFAULT_SPACY_SYNONYMS_PATH
+    if not path.exists():
+        return {}
+
+    synonym_map: dict[str, tuple[str, ...]] = {}
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            term = (row.get("term") or "").strip().lower()
+            synonyms = _split_pipe_values(row.get("synonyms") or row.get("proposed_synonyms"))
+            if term and synonyms:
+                synonym_map[term] = synonyms
+
+    return synonym_map
 
 
 def load_section_definitions(csv_path: str | Path | None = None) -> list[SectionDefinition]:
