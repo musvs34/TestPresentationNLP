@@ -1,0 +1,80 @@
+Catégorie;Terme interdit;Justification
+Données sensibles (article 9 RGPD);Handicap;Données de santé (art. 9 RGPD)
+Données sensibles (article 9 RGPD);autisme;Données de santé (art. 9 RGPD)
+Données sensibles (article 9 RGPD);malvoyant;Données de santé (art. 9 RGPD)
+Données sensibles (article 9 RGPD);invalidité;Données de santé (art. 9 RGPD)
+Données sensibles (article 9 RGPD);maladie;Données de santé (art. 9 RGPD)
+Données sensibles (article 9 RGPD);cancer;Données de santé (art. 9 RGPD)
+Données sensibles (article 9 RGPD);VIH;Données de santé (art. 9 RGPD)
+Données sensibles (article 9 RGPD);dépression;Données de santé (art. 9 RGPD)
+Données sensibles (article 9 RGPD);burn-out;Données de santé (art. 9 RGPD)
+Données sensibles (article 9 RGPD);grossesse;Données de santé (art. 9 RGPD)
+Données sensibles (article 9 RGPD);fumeur;Données de santé (art. 9 RGPD)
+Données sensibles (article 9 RGPD);alcoolique;Données de santé (art. 9 RGPD)
+Données sensibles (article 9 RGPD);obèse;Données de santé (art. 9 RGPD)
+Données sensibles (article 9 RGPD);allergie sévère;Données de santé (art. 9 RGPD)
+Données sensibles (article 9 RGPD);antécédents médicaux;Données de santé (art. 9 RGPD)
+Données sensibles (article 9 RGPD);traitement lourd;Données de santé (art. 9 RGPD)
+Données sensibles (article 9 RGPD);psychiatrie;Données de santé (art. 9 RGPD)
+Données sensibles (article 9 RGPD);bipolaire;Données de santé (art. 9 RGPD)
+Données sensibles (article 9 RGPD);suivi psychologique;Données de santé (art. 9 RGPD)
+Données sensibles (article 9 RGPD);Musulman;Convictions religieuses
+Données sensibles (article 9 RGPD);catholique;Convictions religieuses
+Données sensibles (article 9 RGPD);juif;Convictions religieuses
+Données sensibles (article 9 RGPD);athée;Convictions religieuses
+Données sensibles (article 9 RGPD);protestant;Convictions religieuses
+Données sensibles (article 9 RGPD);Syndiqué;Opinions syndicales et/ou politiques
+Données sensibles (article 9 RGPD);représentant du personnel;Opinions syndicales et/ou politiques
+Données sensibles (article 9 RGPD);parti politique;Opinions syndicales et/ou politiques
+Données sensibles (article 9 RGPD);militantisme;Opinions syndicales et/ou politiques
+Données sensibles (article 9 RGPD);LGBT;Données sur l’orientation sexuelle
+Données sensibles (article 9 RGPD);homosexuel;Données sur l’orientation sexuelle
+Données sensibles (article 9 RGPD);transgenre;Données sur l’orientation sexuelle
+Données sensibles (article 9 RGPD);orientation sexuelle;Données sur l’orientation sexuelle
+Données sensibles (article 9 RGPD);Arabe;Origine raciale ou ethnique
+Données sensibles (article 9 RGPD);noire;Origine raciale ou ethnique
+Données sensibles (article 9 RGPD);asiatique;Origine raciale ou ethnique
+Données sensibles (article 9 RGPD);caucasien;Origine raciale ou ethnique
+Données sensibles (article 9 RGPD);xénophobe;Origine raciale ou ethnique
+Données sensibles (article 9 RGPD);islamophobe;Origine raciale ou ethnique
+Données sensibles (article 9 RGPD);raciste;Origine raciale ou ethnique
+Données sensibles (article 9 RGPD);discrimination positive;Origine raciale ou ethnique
+Données sensibles (article 9 RGPD);Réfugié;Données sur l’origine nationale ou le statut migratoire
+Données sensibles (article 9 RGPD);sans-papiers;Données sur l’origine nationale ou le statut migratoire
+Données sensibles (article 9 RGPD);statut d’immigration;Données sur l’origine nationale ou le statut migratoire
+Jugements de valeur et commentaires subjectifs;Client désagréable;Commentaire subjectif, non objectivé
+Jugements de valeur et commentaires subjectifs;agressif;Commentaire subjectif, non objectivé
+Jugements de valeur et commentaires subjectifs;menteur;Commentaire subjectif, non objectivé
+Jugements de valeur et commentaires subjectifs;manipulateur;Commentaire subjectif, non objectivé
+Jugements de valeur et commentaires subjectifs;Trop vieux pour comprendre;Discrimination potentielle (âge, capacités)
+Jugements de valeur et commentaires subjectifs;peu intelligent;Discrimination potentielle (âge, capacités)
+Jugements de valeur et commentaires subjectifs;Mauvais payeur;Jugement de valeur, diffamation
+Jugements de valeur et commentaires subjectifs;radin;Jugement de valeur, diffamation
+Jugements de valeur et commentaires subjectifs;profiteur;Jugement de valeur, diffamation
+Jugements de valeur et commentaires subjectifs;Cas social;Stigmatisation sociale
+Jugements de valeur et commentaires subjectifs;alcoolique;Stigmatisation sociale
+Jugements de valeur et commentaires subjectifs;marginal;Stigmatisation sociale
+Jugements de valeur et commentaires subjectifs;Ne comprend rien;Portée péjorative, non professionnelle
+Jugements de valeur et commentaires subjectifs;illettré;Portée péjorative, non professionnelle
+Jugements de valeur et commentaires subjectifs;inculte;Portée péjorative, non professionnelle
+Informations personnelles non nécessaires;Nom de l’époux(se);Données excessives ou non pertinentes
+Informations personnelles non nécessaires;enfants;Données excessives ou non pertinentes
+Informations personnelles non nécessaires;habitudes personnelles;Données excessives ou non pertinentes
+Informations personnelles non nécessaires;Situation amoureuse;Informations privées sans lien avec le contrat
+Informations personnelles non nécessaires;adultère;Informations privées sans lien avec le contrat
+Informations personnelles non nécessaires;divorce;Informations privées sans lien avec le contrat
+Informations personnelles non nécessaires;Adresse complète;Données personnelles ou hautement personnelles sans finalité justifiée
+Informations personnelles non nécessaires;numéro de sécurité sociale;Données personnelles ou hautement personnelles sans finalité justifiée
+Informations personnelles non nécessaires;IBAN;Données personnelles ou hautement personnelles sans finalité justifiée
+Informations personnelles non nécessaires;numéro de carte bancaire;Données personnelles ou hautement personnelles sans finalité justifiée
+Informations personnelles non nécessaires;code d’accès;Données personnelles ou hautement personnelles sans finalité justifiée
+Informations personnelles non nécessaires;identifiants personnels;Données personnelles ou hautement personnelles sans finalité justifiée
+Informations personnelles non nécessaires;adresse email privée;Données personnelles ou hautement personnelles sans finalité justifiée
+Informations personnelles non nécessaires;numéro de téléphone personnel;Données personnelles ou hautement personnelles sans finalité justifiée
+Informations personnelles non nécessaires;données bancaires;Données personnelles ou hautement personnelles sans finalité justifiée
+Informations personnelles non nécessaires;nom d’un proche;Données personnelles ou hautement personnelles sans finalité justifiée
+Données bancaires ou de sécurité non chiffrées;Numéro de carte bancaire;Données confidentielles à ne pas saisir en clair
+Données bancaires ou de sécurité non chiffrées;code CVV;Données confidentielles à ne pas saisir en clair
+Données bancaires ou de sécurité non chiffrées;mot de passe;Données confidentielles à ne pas saisir en clair
+Données bancaires ou de sécurité non chiffrées;Identifiants de connexion;Risque de compromission de sécurité
+Données bancaires ou de sécurité non chiffrées;codes d’accès internes;Risque de compromission de sécurité
