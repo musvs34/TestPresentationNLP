@@ -30,6 +30,30 @@ def test_loads_generic_detection_rules(tmp_path: Path) -> None:
     assert rules[0].synonyms == ("assure", "certain")
 
 
+def test_loads_forbidden_words_dpo_format(tmp_path: Path) -> None:
+    csv_path = tmp_path / "Mots_interdits.csv"
+    csv_path.write_text(
+        "Catégorie;Terme interdit;Justification\n"
+        "Données sensibles (article 9 RGPD);dépression;Données de santé (art. 9 RGPD)\n"
+        "Jugements de valeur et commentaires subjectifs;menteur;Commentaire subjectif, non objectivé\n",
+        encoding="utf-8",
+    )
+
+    rules = load_generic_detection_rules(csv_path)
+
+    assert len(rules) == 2
+    assert rules[0].rule_id == "mots_interdits_001_depression"
+    assert rules[0].rule_scope == "article9"
+    assert rules[0].regulatory_family == "rgpd_article_9"
+    assert rules[0].section_scope == ("document",)
+    assert rules[0].category == "donnees_sensibles_article_9_rgpd"
+    assert rules[0].label == "Données de santé (art. 9 RGPD)"
+    assert rules[0].terms == ("dépression",)
+    assert rules[0].applies_whitelist is True
+    assert rules[1].rule_scope == "general"
+    assert rules[1].severity == "high"
+
+
 def test_generic_detector_matches_exact_phrase(tmp_path: Path) -> None:
     csv_path = tmp_path / "generic_detection_rules.csv"
     _write_generic_rules(csv_path)
@@ -107,27 +131,21 @@ def test_spacy_synonyms_are_derived_from_rule_terms_not_rule_synonyms(tmp_path: 
 
 def test_pipeline_uses_default_generic_rules() -> None:
     text = """
-    7. Beneficiaires
-    Mes proches par parts egales.
-    8. Declarations
-    9. Conseil et Recommandation
-    Ce placement est sans risque.
-    10. Signatures
+    Le client signale une depression et des antecedents medicaux.
+    Le commentaire indique aussi que le client est menteur.
     """
 
     result = analyze_text("sample.pdf", "sample.pdf", text)
 
-    rule_ids = {finding.rule_id for finding in result.findings}
-    assert "beneficiary_clause_imprecise" in rule_ids
-    assert "forbidden_sans_risque" in rule_ids
+    matched_terms = {finding.matched_term for finding in result.findings}
+    assert "dépression" in matched_terms or "depression" in matched_terms
+    assert "menteur" in matched_terms
     assert {finding.detection_engine for finding in result.findings} == {"generic"}
 
 
 def test_pipeline_can_enable_spacy_branch_without_breaking_generic() -> None:
     text = """
-    9. Conseil et Recommandation
-    Ce placement est sans risque.
-    10. Signatures
+    Le commentaire indique que le client est menteur.
     """
 
     result = analyze_text(
@@ -144,9 +162,7 @@ def test_pipeline_can_enable_spacy_branch_without_breaking_generic() -> None:
 
 def test_pipeline_can_enable_gliner_branch_without_breaking_generic() -> None:
     text = """
-    9. Conseil et Recommandation
-    Ce placement est sans risque.
-    10. Signatures
+    Le commentaire indique que le client est menteur.
     """
 
     result = analyze_text(

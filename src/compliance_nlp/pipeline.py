@@ -7,10 +7,8 @@ from pathlib import Path
 
 from .config import (
     GenericDetectionRule,
-    SectionDefinition,
     WhitelistTerm,
     load_generic_detection_rules,
-    load_section_definitions,
     load_whitelist_terms,
 )
 from .generic import analyze_generic_sections
@@ -26,27 +24,14 @@ from .linguistic import DEFAULT_SPACY_MODEL, DEFAULT_SPACY_SYNONYMS_FILE, analyz
 from .models import DocumentAnalysis, Finding
 from .pdf import extract_text_from_pdf
 from .regex_detector import analyze_regex_sections
-from .text_utils import compact_text, extract_section, normalize_whitespace
+from .text_utils import compact_text, normalize_whitespace
 
 
-def _build_sections(
-    extracted_text: str,
-    section_definitions: list[SectionDefinition],
-) -> dict[str, str]:
-    """Extract configured sections used by compliance rules."""
+def _build_sections(extracted_text: str) -> dict[str, str]:
+    """Build the single document-level section used by compliance rules."""
 
     text = normalize_whitespace(extracted_text)
-    sections: dict[str, str] = {}
-    for section in section_definitions:
-        if section.section_id == "document" or not section.start_marker:
-            sections[section.section_id] = text
-            continue
-        sections[section.section_id] = extract_section(
-            text,
-            section.start_marker,
-            section.end_marker,
-        )
-    return sections
+    return {"document": text}
 
 
 def _normalize_enabled_branches(enabled_branches: tuple[str, ...] | list[str] | None) -> tuple[str, ...]:
@@ -64,7 +49,6 @@ def analyze_text(
     source_path: str,
     extracted_text: str,
     generic_rules: list[GenericDetectionRule] | None = None,
-    section_definitions: list[SectionDefinition] | None = None,
     whitelist_terms: list[WhitelistTerm] | None = None,
     enabled_branches: tuple[str, ...] | list[str] | None = None,
     spacy_model: str = DEFAULT_SPACY_MODEL,
@@ -78,8 +62,7 @@ def analyze_text(
 ) -> DocumentAnalysis:
     """Analyze already extracted text."""
 
-    section_definitions = section_definitions or load_section_definitions()
-    sections = _build_sections(extracted_text, section_definitions)
+    sections = _build_sections(extracted_text)
     if generic_rules is None:
         generic_rules = load_generic_detection_rules()
     if whitelist_terms is None:
@@ -178,7 +161,7 @@ def analyze_text(
             ),
             "central_rules_loaded": len(generic_rules),
             "generic_rules_loaded": len(generic_rules),
-            "sections_loaded": len(section_definitions),
+            "analysis_scope": "document",
             "whitelist_terms_loaded": len(whitelist_terms),
         },
     )
@@ -187,10 +170,8 @@ def analyze_text(
 def analyze_file(
     pdf_path: str | Path,
     generic_rules: list[GenericDetectionRule] | None = None,
-    section_definitions: list[SectionDefinition] | None = None,
     whitelist_terms: list[WhitelistTerm] | None = None,
     generic_rules_path: str | Path | None = None,
-    sections_path: str | Path | None = None,
     whitelist_path: str | Path | None = None,
     enabled_branches: tuple[str, ...] | list[str] | None = None,
     spacy_model: str = DEFAULT_SPACY_MODEL,
@@ -209,9 +190,6 @@ def analyze_file(
     resolved_generic_rules = generic_rules
     if resolved_generic_rules is None:
         resolved_generic_rules = load_generic_detection_rules(generic_rules_path)
-    resolved_section_definitions = section_definitions
-    if resolved_section_definitions is None:
-        resolved_section_definitions = load_section_definitions(sections_path)
     resolved_whitelist_terms = whitelist_terms
     if resolved_whitelist_terms is None:
         resolved_whitelist_terms = load_whitelist_terms(whitelist_path)
@@ -221,7 +199,6 @@ def analyze_file(
         str(path),
         extracted_text,
         generic_rules=resolved_generic_rules,
-        section_definitions=resolved_section_definitions,
         whitelist_terms=resolved_whitelist_terms,
         enabled_branches=enabled_branches,
         spacy_model=spacy_model,
@@ -239,7 +216,6 @@ def analyze_directory(
     input_dir: str | Path,
     output_path: str | Path | None = None,
     generic_rules_path: str | Path | None = None,
-    sections_path: str | Path | None = None,
     whitelist_path: str | Path | None = None,
     enabled_branches: tuple[str, ...] | list[str] | None = None,
     spacy_model: str = DEFAULT_SPACY_MODEL,
@@ -256,13 +232,11 @@ def analyze_directory(
     directory = Path(input_dir)
     pdf_files = sorted(directory.glob("*.pdf"))
     generic_rules = load_generic_detection_rules(generic_rules_path)
-    section_definitions = load_section_definitions(sections_path)
     whitelist_terms = load_whitelist_terms(whitelist_path)
     results = [
         analyze_file(
             pdf_path,
             generic_rules=generic_rules,
-            section_definitions=section_definitions,
             whitelist_terms=whitelist_terms,
             enabled_branches=enabled_branches,
             spacy_model=spacy_model,

@@ -25,8 +25,8 @@ pip install -r requirements.txt
 Le coeur du traitement est dans `src/compliance_nlp/` :
 
 - extraction du texte PDF
-- lecture des sections configurees dans `configs/sections.csv`
-- lecture du dictionnaire central dans `configs/generic_detection_rules.csv`
+- analyse du document complet dans une section unique `document`
+- lecture du dictionnaire central dans `configs/Mots_interdits.csv`
 - application optionnelle de la whitelist dans `configs/article9_whitelist.csv`
 - serialisation des resultats
 - helpers d'exploitation pour notebook
@@ -47,43 +47,29 @@ Le resultat JSON est ecrit dans `outputs/analysis/results.json`.
 
 ## Chaine centrale de controle par referentiel
 
-Les controles de sections, de clauses, de conseil, de mots interdits et Article 9 sont pilotes par le meme dictionnaire.
-Ils ne sont plus codes en dur dans le pipeline et ne passent plus par deux branches techniques separees.
-
-Sections a extraire :
-
-- `configs/sections.csv`
+Les controles de mots interdits et Article 9 sont pilotes par le meme dictionnaire.
+Ils sont appliques au document complet, sans fichier de configuration de sections.
 
 Regles centrales a appliquer :
 
-- `configs/generic_detection_rules.csv`
+- `configs/Mots_interdits.csv`
 
-Chaque regle peut contenir :
+Le fichier `Mots_interdits.csv` est le referentiel metier principal :
 
-- `rule_id` : identifiant stable de la regle
-- `rule_scope` : `general` ou `article9`
-- `regulatory_family` : `conformite_metier`, `rgpd_article_9`, `qualite_redactionnelle`, etc.
-- `section_scope` : section cible, par exemple `beneficiaires`, `conseil` ou `document`
-- `category` : famille de controle
-- `terms` : mots ou mots composes separes par `|`
-- `synonyms` : synonymes separes par `|`
-- `alert_level` : `interdit`, `alerte` ou `ambigue`
-- `severity` : `high`, `medium` ou `low`
-- `base_score` : score de depart
-- `fuzzy_threshold` : seuil de rapprochement pour fautes d'orthographe
-- `applies_whitelist` : `true` si la regle doit etre neutralisee par la whitelist
+- `Terme interdit` : mot ou expression a detecter
+- `Categorie` : famille utilisee pour classer l'alerte
+- `Justification` : libelle explicatif remonte dans les resultats
+
+Le chargeur reste compatible avec l'ancien format technique `generic_detection_rules.csv`
+pour les tests et les experimentations avancees.
 
 Le moteur central gere les detections `exact`, `synonym`, `root` et `fuzzy`.
 
 ## Controle Article 9 RGPD dans la chaine centrale
 
-Les donnees sensibles Article 9 sont des lignes du dictionnaire central avec :
-
-- `rule_scope=article9`
-- `regulatory_family=rgpd_article_9`
-- `section_scope=document`
-- `category=sante`, `opinions_politiques`, `appartenance_syndicale`, etc.
-- `applies_whitelist=true`
+Les donnees sensibles Article 9 sont les lignes dont la colonne `Categorie`
+contient `article 9`. La whitelist peut neutraliser certaines expressions
+metier non sensibles.
 
 Les expressions a ne pas remonter sont parametrees dans :
 
@@ -123,3 +109,4 @@ df[df["matched_term"] == "sans risque"]
 df[df["rule_scope"] == "article9"]
 df[df["score"] >= 0.85]
 ```
+

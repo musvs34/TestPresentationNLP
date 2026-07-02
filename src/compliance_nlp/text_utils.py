@@ -39,29 +39,6 @@ def tokenize_words(text: str) -> list[str]:
     return re.findall(r"\b[\w']+\b", normalized)
 
 
-def extract_section(text: str, start_marker: str, end_marker: str | None = None) -> str:
-    """Extract a text section delimited by markers."""
-
-    single_line = compact_text(text)
-    haystack = single_line.casefold()
-    start_token = start_marker.casefold()
-    end_token = end_marker.casefold() if end_marker else None
-
-    start_index = haystack.find(start_token)
-    if start_index == -1:
-        return ""
-
-    start_index += len(start_marker)
-    if end_token:
-        end_index = haystack.find(end_token, start_index)
-        if end_index == -1:
-            end_index = len(single_line)
-    else:
-        end_index = len(single_line)
-
-    return single_line[start_index:end_index].strip(" :-")
-
-
 def shorten(text: str, max_length: int = 220) -> str:
     """Shorten evidence snippets for result payloads."""
 

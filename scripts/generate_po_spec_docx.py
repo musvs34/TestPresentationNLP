@@ -75,7 +75,7 @@ def save_functional_architecture(path: Path):
 
     source = draw_box(ax, (0.5, 3.05), "Document ou texte de test", color=COLORS["blue"])
     load = draw_box(ax, (3.35, 3.05), "Extraction / chargement du texte", color=COLORS["gray"])
-    sections = draw_box(ax, (6.15, 3.05), "Découpage en sections métier", color=COLORS["gray"])
+    sections = draw_box(ax, (6.15, 3.05), "Préparation du document complet", color=COLORS["gray"])
     arrow_lr(ax, source, load)
     arrow_lr(ax, load, sections)
 
@@ -116,7 +116,7 @@ def save_technical_architecture(path: Path):
     ax.axis("off")
     ax.set_title("Architecture technique", fontsize=15, weight="bold", pad=14)
 
-    cfg = draw_box(ax, (0.5, 5.45), "configs/*.csv\nRègles, sections, cas, synonymes", width=2.9, color=COLORS["blue"])
+    cfg = draw_box(ax, (0.5, 5.45), "configs/*.csv\nRègles, cas, synonymes", width=2.9, color=COLORS["blue"])
     text = draw_box(ax, (0.5, 3.7), "PDF / textes\nNotebooks", width=2.9, color=COLORS["blue"])
     pipe = draw_box(ax, (4.45, 4.55), "pipeline.py\nOrchestration", width=2.85, height=0.95, color="#DDEBF7")
     arrow_lr(ax, cfg, pipe)
@@ -282,7 +282,7 @@ body.append(paragraph("Détecter automatiquement des alertes de conformité dans
 body.append(paragraph("Périmètre fonctionnel", style="Heading2"))
 for item in [
     "Analyser un document complet ou des cas de test textuels.",
-    "Découper le texte en sections métier lorsque le document suit la structure attendue.",
+    "Analyser le document complet dans une section unique.",
     "Activer ou désactiver chaque branche de détection depuis les notebooks.",
     "Comparer les scores et les résultats par branche.",
     "Centraliser les cas de test dans configs/test_cases.csv.",
@@ -304,7 +304,7 @@ body.append(paragraph("Architecture fonctionnelle", style="Heading2"))
 body.append(doc_image(functional_img))
 body.append(paragraph("Critères d’acceptation fonctionnels", style="Heading2"))
 for item in [
-    "Chaque alerte indique le moteur, la règle ou catégorie, le terme détecté, le score et la section.",
+    "Chaque alerte indique le moteur, la règle ou catégorie, le terme détecté et le score.",
     "Les branches sont comparables sur les mêmes cas de test.",
     "Les modèles ne sont pas téléchargés à chaque exécution.",
     "Le Product Owner peut identifier les faux positifs, les faux négatifs et les écarts entre branches.",
@@ -343,7 +343,7 @@ body.append(table(
 ))
 
 body.append(paragraph("Branche Generic", style="Heading2"))
-body.append(paragraph("La branche generic est le moteur de référence déterministe. Elle lit les termes, synonymes métier, seuils et catégories depuis configs/generic_detection_rules.csv. Elle applique des recherches exactes, des rapprochements de racines simples et du fuzzy matching. Elle est recommandée comme base robuste et auditée."))
+body.append(paragraph("La branche generic est le moteur de référence déterministe. Elle lit les termes, synonymes métier, seuils et catégories depuis configs/Mots_interdits.csv. Elle applique des recherches exactes, des rapprochements de racines simples et du fuzzy matching. Elle est recommandée comme base robuste et auditée."))
 body.append(paragraph("Branche spaCy", style="Heading2"))
 body.append(paragraph("La branche spaCy utilise le modèle local fr_core_news_md. Elle n’utilise plus les synonymes du CSV métier principal. Elle part des termes interdits puis enrichit la reconnaissance via configs/spacy_synonyms.csv. Cette séparation permet de comparer l’effet de l’enrichissement linguistique sans modifier le référentiel métier principal."))
 body.append(paragraph("Branche GLiNER", style="Heading2"))
@@ -412,3 +412,4 @@ with zipfile.ZipFile(DOCX_PATH, "w", zipfile.ZIP_DEFLATED) as zf:
         zf.write(path, f"word/media/{name}")
 
 print(DOCX_PATH.resolve())
+
