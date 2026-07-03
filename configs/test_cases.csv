@@ -1,16 +1,16 @@
-text,control_family,comment
-7. Beneficiaires Je designe mes proches par parts egales. 8. Declarations 9. Conseil et Recommandation Texte neutre. 10. Signatures,generic,Clause beneficiaire imprecise dans la section beneficiaires.
-7. Beneficiaires Clause neutre. 8. Declarations 9. Conseil et Recommandation Ce placement est sans risque pour le client. 10. Signatures,generic,Mot compose interdit dans la section conseil.
-7. Beneficiaires Clause neutre. 8. Declarations 9. Conseil et Recommandation Le conseiller indique qu'il faut foncer. 10. Signatures,generic,Synonyme configure pour conseil.
-7. Beneficiaires Clause neutre. 8. Declarations 9. Conseil et Recommandation Les rendements sont garantis par la compagnie. 10. Signatures,generic,Variante avec meme racine/lemme autour de garanti.
-7. Beneficiaires Clause neutre. 8. Declarations 9. Conseil et Recommandation Le capital est garentie par le contrat. 10. Signatures,generic,Faute volontaire sur garantie.
-Le client indique etre diabetique depuis plusieurs annees.,article9,Terme exact Article 9 dans le document complet.
-Observation libre : traitement par insuline signale par l'adherent.,article9,Synonyme Article 9.
-Les informations indiquent des antecedents diabetiques.,article9,Variante autour de diabetique.
-Le souscripteur precise etre diabettique.,article9,Faute volontaire Article 9.
-La sante financiere du contrat est correcte.,article9,Expression attendue en whitelist.
-Contact 06-05.01 0404,article9,Numero de telephone.
-Joignable test@yahoo.Fr,article9,Adresse email.
-Il aime bien courir a l'extreme droite de la piste.,article9,Fausse alerte opinion politique.
-Il siege au conseil et a une vision a l'extrme droite.,article9,Opinion politique.
-7. Beneficiaires Clause neutre. 8. Declarations 9. Conseil et Recommandation Le client souhaite modifier son adresse postale. 10. Signatures,generic,Phrase neutre.
+case_id,text,control_family,comment
+case_001,Le dossier mentionne un handicap declare par le client.,generic,Terme interdit issu de Mots_interdits: Handicap.
+case_002,La note interne indique un antecedent de cancer.,generic,Terme interdit issu de Mots_interdits: cancer.
+case_003,Le client parle d'une depression ancienne dans le formulaire.,generic,Terme interdit issu de Mots_interdits: depression.
+case_004,La zone libre indique un traitement lourd en cours.,generic,Expression interdite issue de Mots_interdits: traitement lourd.
+case_005,Le conseiller a ecrit que le client est menteur.,generic,Terme interdit issu de Mots_interdits: menteur.
+case_006,Commentaire interne: client desagreable lors de l'entretien.,generic,Expression interdite issue de Mots_interdits: Client desagreable.
+case_007,Le dossier precise le numero de securite sociale du client.,generic,Expression interdite issue de Mots_interdits: numero de securite sociale.
+case_008,La fiche contient une adresse email privee de l'adherent.,generic,Expression interdite issue de Mots_interdits: adresse email privee.
+case_009,Le document indique un mot de passe communique en clair.,generic,Expression interdite issue de Mots_interdits: mot de passe.
+case_010,La note mentionne un code CVV saisi en clair.,generic,Expression interdite issue de Mots_interdits: code CVV.
+case_011,Le dossier mentionne une depresion ancienne.,generic,Faute volontaire sur Mots_interdits: depression.
+case_012,Le client est handicaape depuis plusieurs annees.,generic,Faute volontaire sur Mots_interdits: Handicap.
+case_013,La note parle de problemes alcooliques.,generic,Meme racine/pluriel autour de Mots_interdits: alcoolique.
+case_014,Le dossier contient un numero de securite social.,generic,Faute volontaire sur Mots_interdits: numero de securite sociale.
+case_015,Le client a un traitement lour.,generic,Faute volontaire sur Mots_interdits: traitement lourd.

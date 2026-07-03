@@ -1,43 +1,78 @@
 term,synonyms
-sans risque,sans danger|risque nul|aucun risque|securise
-garanti,assure|certain|securise|protege
-garantie,assure|certain|securise|protection
-certain,sur|assure|incontestable
-forcement,necessairement|obligatoirement|inevitablement
-toujours,constamment|systematiquement|invariablement
-top,excellent|parfait|ideal
-foncer,agir vite|se lancer|y aller|ne pas hesiter
-proches,famille|parents|entourage
-par defaut,standard|automatique|formule standard
-diabete,insuline|glycemie|traitement insulinique
-diabetique,insuline|glycemie|traitement insulinique
-diabetiques,insuline|glycemie|traitement insulinique
-cancer,chimiotherapie|tumeur|oncologie
-tumeur,cancer|chimiotherapie|oncologie
-handicap,invalidite|incapacite
-depression,trouble depressif|antidepresseur
-vih,sida|seropositif
-sida,vih|seropositif
-engagement politique,parti politique|militant politique|campagne electorale|tract politique
-militant politique,parti politique|engagement politique|campagne electorale
-parti politique,engagement politique|militant politique|campagne electorale
-syndique,delegue syndical|syndicat
-syndicat,delegue syndical|cgt|cfdt|fo|unsa|cfe cgc
-delegue syndical,syndicat|cgt|cfdt|fo|unsa|cfe cgc
-religion,pratique religieuse|lieu de culte|conviction religieuse
-religieux,religion|pratique religieuse|lieu de culte
-musulman,islam|religion musulmane
-chretien,christianisme|religion chretienne
-juif,judaisme|religion juive
-bouddhiste,bouddhisme|religion bouddhiste
-homosexuel,vie sexuelle|orientation sexuelle
-bisexuel,vie sexuelle|orientation sexuelle
-heterosexuel,vie sexuelle|orientation sexuelle
-orientation sexuelle,vie sexuelle|pacs avec mon compagnon|pacs avec ma compagne
-origine ethnique,communaute ethnique|minorite ethnique
-origine raciale,communaute ethnique|minorite ethnique
-race,origine raciale|origine ethnique
-ethnie,origine ethnique|communaute ethnique
-empreinte digitale,biometrie|donnee biometrique
-reconnaissance faciale,biometrie|donnee biometrique
-biometrie,donnee biometrique|scan iris
+handicap,
+autisme,introversion|schizothymie|schizophrenie|schizoidie|egocentrisme
+malvoyant,amblyope|malte (fievre de)
+invalidite,
+maladie,affection|mal|malaise|pathologie|manie
+cancer,
+vih,
+depression,
+burn-out,surmenage|epuisement professionnel|fin de combustion|epuisement|burnout
+grossesse,gestation|maternite|gravidisme|gravidite|pregnancy
+fumeur,clopeur|utilisateur de tabac|tabagiste
+alcoolique,ivrogne|buveur|biberon|ethylique|poivrot
+obese,
+allergie severe,
+antecedents medicaux,
+traitement lourd,
+psychiatrie,alienisme|sante mentale|psychiatrie medicale
+bipolaire,dipolaire|cyclothymique|maniaco-depressif|lunatique
+suivi psychologique,
+musulman,
+catholique,chretien|catho|baptise|papiste|fidele
+juif,
+athee,
+protestant,quaker|evangelique|presbyterien|calviniste|religionnaire
+syndique,
+representant du personnel,
+parti politique,
+militantisme,activisme|proselytisme|engagement|engagement politique
+lgbt,
+homosexuel,
+transgenre,rae rae|raerae|transsexuel|transgenique (animal)|trans
+orientation sexuelle,
+arabe,arabique|maure|sarrasin|bedouin|beur
+noire,mortelle|noir
+asiatique,oriental|chinois|asiate|mongol|japonais
+caucasien,blanc|leucoderme|europeen
+xenophobe,
+islamophobe,
+raciste,xenophobe|totalitaire
+discrimination positive,action positive|discrimination bienveillante|favoritisme positif
+refugie,
+sans-papiers,clandestin
+statut d’immigration,
+client desagreable,
+agressif,acerbe|mordant|aigre|amer|vif
+menteur,hableur|imposteur|bluffeur|trompeur|bonisseur
+manipulateur,escamoteur|marionnettiste|illusionniste|prestidigitateur|operateur
+trop vieux pour comprendre,
+peu intelligent,
+mauvais payeur,
+radin,avare|pingre|rat|rapiat|ladre
+profiteur,sangsue|exploiteur|agioteur|trafiquant|speculateur
+cas social,cassos
+marginal,secondaire|asocial|paume|mineur|parallele
+ne comprend rien,
+illettre,
+inculte,grossier|fruste|rustique|brut|barbare
+nom de l’epoux(se),
+enfants,gosses|gamins|marmots|mioches|progeniture
+habitudes personnelles,
+situation amoureuse,vie sentimentale
+adultere,
+divorce,rupture|opposition|separation|desaccord|divergence
+adresse complete,
+numero de securite sociale,
+iban,
+numero de carte bancaire,
+code d’acces,
+identifiants personnels,
+adresse email privee,
+numero de telephone personnel,
+donnees bancaires,
+nom d’un proche,
+code cvv,
+mot de passe,code secret|cle|code confidentiel|mot-cle|mot clef
+identifiants de connexion,
+codes d’acces internes,

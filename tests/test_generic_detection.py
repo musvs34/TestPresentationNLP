@@ -1,6 +1,10 @@
 from pathlib import Path
 
-from compliance_nlp.config import load_generic_detection_rules, load_spacy_synonym_map
+from compliance_nlp.config import (
+    load_generic_detection_rules,
+    load_spacy_synonym_map,
+    refresh_spacy_synonyms_from_forbidden_words,
+)
 from compliance_nlp.generic import analyze_generic_section
 from compliance_nlp.linguistic import _synonyms_for_rule_terms
 from compliance_nlp.pipeline import analyze_text
@@ -111,6 +115,74 @@ def test_loads_spacy_synonyms_from_separate_file(tmp_path: Path) -> None:
     synonym_map = load_spacy_synonym_map(csv_path)
 
     assert synonym_map == {"garantie": ("assure", "certain")}
+
+
+def test_refreshes_spacy_synonyms_from_forbidden_words(tmp_path: Path) -> None:
+    forbidden_words_path = tmp_path / "Mots_interdits.csv"
+    forbidden_words_path.write_text(
+        "Catégorie;Terme interdit;Justification\n"
+        "Données sensibles (article 9 RGPD);dépression;Données de santé\n"
+        "Jugements de valeur;menteur;Commentaire subjectif\n",
+        encoding="utf-8",
+    )
+    synonyms_path = tmp_path / "spacy_synonyms.csv"
+    synonyms_path.write_text(
+        "term,synonyms\n"
+        "depression,trouble depressif|antidepresseur\n"
+        "ancien terme,synonyme obsolete\n",
+        encoding="utf-8",
+    )
+
+    count = refresh_spacy_synonyms_from_forbidden_words(
+        forbidden_words_path,
+        synonyms_path,
+    )
+
+    assert count == 2
+    assert synonyms_path.read_text(encoding="utf-8").splitlines() == [
+        "term,synonyms",
+        "depression,trouble depressif|antidepresseur",
+        "menteur,",
+    ]
+
+
+def test_refreshes_spacy_synonyms_from_cached_jeuxdemots(tmp_path: Path) -> None:
+    forbidden_words_path = tmp_path / "Mots_interdits.csv"
+    forbidden_words_path.write_text(
+        "Catégorie;Terme interdit;Justification\n"
+        "Jugements de valeur;menteur;Commentaire subjectif\n",
+        encoding="utf-8",
+    )
+    synonyms_path = tmp_path / "spacy_synonyms.csv"
+    store_path = tmp_path / "jeuxdemots"
+    store_path.mkdir()
+    (store_path / "menteur.html").write_text(
+        """
+        // DUMP pour le terme 'menteur' (eid=1)
+        e;1;'menteur';1;100
+        e;2;'hâbleur';1;90
+        e;3;'imposteur';1;80
+        e;4;'en:liar';1;70
+        r;10;1;2;5;172;1;1
+        r;11;1;3;5;160;0.9;2
+        r;12;1;4;5;150;0.8;3
+        """,
+        encoding="utf-8",
+    )
+
+    count = refresh_spacy_synonyms_from_forbidden_words(
+        forbidden_words_path,
+        synonyms_path,
+        jeuxdemots_store_path=store_path,
+        enrich_with_jeuxdemots=True,
+        allow_network=False,
+    )
+
+    assert count == 1
+    assert synonyms_path.read_text(encoding="utf-8").splitlines() == [
+        "term,synonyms",
+        "menteur,hableur|imposteur",
+    ]
 
 
 def test_spacy_synonyms_are_derived_from_rule_terms_not_rule_synonyms(tmp_path: Path) -> None:
