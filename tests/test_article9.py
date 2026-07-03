@@ -89,3 +89,32 @@ def test_article9_applies_whitelist_from_central_rules(tmp_path: Path) -> None:
     )
 
     assert not [finding for finding in result.findings if finding.rule_scope == "article9"]
+    assert result.metadata["whitelist_ignored_count"] == 1
+    ignored = result.metadata["whitelist_ignored_findings"][0]
+    assert ignored["whitelist_expression"] == "sante financiere"
+    assert ignored["finding"]["matched_term"] == "sante"
+
+
+def test_pipeline_applies_whitelist_to_regex_branch(tmp_path: Path) -> None:
+    whitelist_path = tmp_path / "article9_whitelist.csv"
+    whitelist_path.write_text(
+        "expression,reason\n"
+        "contact test@example.com,Adresse de test autorisee\n",
+        encoding="utf-8",
+    )
+
+    result = analyze_text(
+        "sample.pdf",
+        "sample.pdf",
+        "Contact test@example.com.",
+        whitelist_terms=load_whitelist_terms(whitelist_path),
+        enabled_branches=("regex",),
+    )
+
+    assert result.findings == []
+    assert result.metadata["regex_finding_count"] == 0
+    assert result.metadata["raw_finding_count_by_engine"] == {"regex": 1}
+    assert result.metadata["whitelist_ignored_count_by_engine"] == {"regex": 1}
+    ignored = result.metadata["whitelist_ignored_findings"][0]
+    assert ignored["finding"]["detection_engine"] == "regex"
+    assert ignored["finding"]["matched_term"] == "test@example.com"

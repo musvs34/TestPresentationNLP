@@ -13,6 +13,7 @@ from .config import (
 )
 from .generic import analyze_generic_sections
 from .gliner_detector import (
+    DEFAULT_GLINER_LABEL_GROUPS,
     DEFAULT_GLINER_LABELS,
     DEFAULT_GLINER_MODEL,
     DEFAULT_GLINER_SOURCE_MODEL,
@@ -24,7 +25,7 @@ from .linguistic import DEFAULT_SPACY_MODEL, DEFAULT_SPACY_SYNONYMS_FILE, analyz
 from .models import DocumentAnalysis, Finding
 from .pdf import extract_text_from_pdf
 from .regex_detector import analyze_regex_sections
-from .text_utils import compact_text, normalize_whitespace
+from .text_utils import compact_text, normalize_for_matching, normalize_whitespace
 
 
 def _build_sections(extracted_text: str) -> dict[str, str]:
@@ -44,6 +45,84 @@ def _normalize_enabled_branches(enabled_branches: tuple[str, ...] | list[str] | 
     return normalized
 
 
+def _whitelist_match(
+    finding: Finding,
+    section_text: str,
+    whitelist_terms: list[WhitelistTerm],
+) -> WhitelistTerm | None:
+    matched_text = finding.matched_term or ""
+    if not matched_text:
+        return None
+
+    normalized_match = normalize_for_matching(matched_text)
+    normalized_section = normalize_for_matching(section_text)
+    if not normalized_match or not normalized_section:
+        return None
+
+    for item in whitelist_terms:
+        normalized_expression = normalize_for_matching(item.expression)
+        if not normalized_expression or normalized_expression not in normalized_section:
+            continue
+        if normalized_match in normalized_expression or normalized_expression in normalized_match:
+            return item
+
+    return None
+
+
+def _apply_whitelist_filter(
+    findings: list[Finding],
+    sections: dict[str, str],
+    whitelist_terms: list[WhitelistTerm],
+) -> tuple[list[Finding], list[dict[str, object]]]:
+    active_findings: list[Finding] = []
+    ignored_findings: list[dict[str, object]] = []
+
+    for finding in findings:
+        section_text = sections.get(finding.section, "")
+        whitelist_item = _whitelist_match(finding, section_text, whitelist_terms)
+        if whitelist_item is None:
+            active_findings.append(finding)
+            continue
+
+        ignored_findings.append(
+            {
+                "finding": finding.to_dict(),
+                "whitelist_expression": whitelist_item.expression,
+                "whitelist_reason": whitelist_item.reason,
+                "ignore_reason": "whitelist",
+            }
+        )
+
+    return active_findings, ignored_findings
+
+
+def _count_by_engine(findings: list[Finding]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for finding in findings:
+        engine = finding.detection_engine or "unknown"
+        counts[engine] = counts.get(engine, 0) + 1
+    return counts
+
+
+def _gliner_labels_metadata(
+    gliner_labels: dict[str, list[str] | tuple[str, ...]] | tuple[str, ...] | list[str] | None,
+) -> tuple[list[str], dict[str, list[str]] | None]:
+    if gliner_labels is None:
+        groups = {
+            group_name: list(labels)
+            for group_name, labels in DEFAULT_GLINER_LABEL_GROUPS.items()
+        }
+        return list(DEFAULT_GLINER_LABELS), groups
+    if isinstance(gliner_labels, dict):
+        groups = {
+            group_name: [label for label in labels if label]
+            for group_name, labels in gliner_labels.items()
+        }
+        labels = [label for group_labels in groups.values() for label in group_labels]
+        return labels, groups
+    return list(gliner_labels), None
+
+
 def analyze_text(
     document_name: str,
     source_path: str,
@@ -56,7 +135,7 @@ def analyze_text(
     gliner_model: str = DEFAULT_GLINER_MODEL,
     gliner_cache_dir: str | None = str(DEFAULT_MODEL_CACHE_DIR),
     gliner_source_model: str = DEFAULT_GLINER_SOURCE_MODEL,
-    gliner_labels: tuple[str, ...] | list[str] | None = None,
+    gliner_labels: dict[str, list[str] | tuple[str, ...]] | tuple[str, ...] | list[str] | None = None,
     gliner_threshold: float = DEFAULT_GLINER_THRESHOLD,
     gliner_local_files_only: bool = False,
 ) -> DocumentAnalysis:
@@ -69,25 +148,23 @@ def analyze_text(
         whitelist_terms = load_whitelist_terms()
     enabled_branches = _normalize_enabled_branches(enabled_branches)
 
-    findings: list[Finding] = []
+    raw_findings: list[Finding] = []
     branch_errors: dict[str, str] = {}
 
     if "generic" in enabled_branches:
-        findings.extend(
+        raw_findings.extend(
             analyze_generic_sections(
                 sections,
                 generic_rules,
-                whitelist_terms=whitelist_terms,
             )
         )
 
     if "spacy" in enabled_branches:
         try:
-            findings.extend(
+            raw_findings.extend(
                 analyze_linguistic_sections(
                     sections,
                     generic_rules,
-                    whitelist_terms=whitelist_terms,
                     spacy_model=spacy_model,
                     spacy_synonyms_path=spacy_synonyms_path,
                 )
@@ -97,7 +174,7 @@ def analyze_text(
 
     if "gliner" in enabled_branches:
         try:
-            findings.extend(
+            raw_findings.extend(
                 analyze_gliner_sections(
                     sections,
                     labels=gliner_labels,
@@ -112,13 +189,27 @@ def analyze_text(
             branch_errors["gliner"] = str(exc)
 
     if "regex" in enabled_branches:
-        findings.extend(analyze_regex_sections(sections))
+        raw_findings.extend(analyze_regex_sections(sections))
+
+    findings, ignored_findings = _apply_whitelist_filter(
+        raw_findings,
+        sections,
+        whitelist_terms,
+    )
 
     generic_findings = [finding for finding in findings if finding.detection_engine == "generic"]
     spacy_findings = [finding for finding in findings if finding.detection_engine == "spacy"]
     gliner_findings = [finding for finding in findings if finding.detection_engine == "gliner"]
     regex_findings = [finding for finding in findings if finding.detection_engine == "regex"]
-    resolved_gliner_labels = list(gliner_labels or DEFAULT_GLINER_LABELS)
+    raw_counts_by_engine = _count_by_engine(raw_findings)
+    ignored_counts_by_engine: dict[str, int] = {}
+    for item in ignored_findings:
+        ignored = item["finding"]
+        if not isinstance(ignored, dict):
+            continue
+        engine = str(ignored.get("detection_engine") or "unknown")
+        ignored_counts_by_engine[engine] = ignored_counts_by_engine.get(engine, 0) + 1
+    resolved_gliner_labels, resolved_gliner_label_groups = _gliner_labels_metadata(gliner_labels)
 
     return DocumentAnalysis(
         document_name=document_name,
@@ -129,6 +220,11 @@ def analyze_text(
         metadata={
             "finding_count": len(findings),
             "has_findings": bool(findings),
+            "raw_finding_count": len(raw_findings),
+            "whitelist_ignored_count": len(ignored_findings),
+            "whitelist_ignored_findings": ignored_findings,
+            "raw_finding_count_by_engine": raw_counts_by_engine,
+            "whitelist_ignored_count_by_engine": ignored_counts_by_engine,
             "enabled_branches": list(enabled_branches),
             "spacy_model": spacy_model,
             "spacy_synonyms_path": spacy_synonyms_path,
@@ -136,6 +232,7 @@ def analyze_text(
             "gliner_cache_dir": gliner_cache_dir,
             "gliner_source_model": gliner_source_model,
             "gliner_labels": resolved_gliner_labels,
+            "gliner_label_groups": resolved_gliner_label_groups,
             "gliner_threshold": gliner_threshold,
             "gliner_local_files_only": gliner_local_files_only,
             "branch_errors": branch_errors,
@@ -179,7 +276,7 @@ def analyze_file(
     gliner_model: str = DEFAULT_GLINER_MODEL,
     gliner_cache_dir: str | None = str(DEFAULT_MODEL_CACHE_DIR),
     gliner_source_model: str = DEFAULT_GLINER_SOURCE_MODEL,
-    gliner_labels: tuple[str, ...] | list[str] | None = None,
+    gliner_labels: dict[str, list[str] | tuple[str, ...]] | tuple[str, ...] | list[str] | None = None,
     gliner_threshold: float = DEFAULT_GLINER_THRESHOLD,
     gliner_local_files_only: bool = False,
 ) -> DocumentAnalysis:
@@ -223,7 +320,7 @@ def analyze_directory(
     gliner_model: str = DEFAULT_GLINER_MODEL,
     gliner_cache_dir: str | None = str(DEFAULT_MODEL_CACHE_DIR),
     gliner_source_model: str = DEFAULT_GLINER_SOURCE_MODEL,
-    gliner_labels: tuple[str, ...] | list[str] | None = None,
+    gliner_labels: dict[str, list[str] | tuple[str, ...]] | tuple[str, ...] | list[str] | None = None,
     gliner_threshold: float = DEFAULT_GLINER_THRESHOLD,
     gliner_local_files_only: bool = False,
 ) -> list[DocumentAnalysis]:
