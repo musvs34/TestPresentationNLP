@@ -20,3 +20,5 @@ case_018, autiste,ExpREg,racine commune mais pas synonyme
 case_019,c'est une personne qui siege a l'assemblé et a une vision à l'extreme droite,Gliner,vision politique
 case_020,c'est un coureur il aime courir à l'extreme droite de la piste,Gliner, fausse ressemblance avec vision politique
 case_021,le prospect souahite CARAC handicap,Generic,test de la whiteList
+case_022,la personne a plusieurs pathologies,Spacy,test d'identification d un synonyme de malaldie
+case_023,la personne est une menteuse,Spacy,detection d un mots similaire à menteur
