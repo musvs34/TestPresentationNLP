@@ -41,3 +41,9 @@ case_021,Generic,test de la whiteList,ignored_by_whitelist,detecte puis ignore p
 case_021,Generic,test de la whiteList,ignored_by_whitelist,detecte puis ignore par whitelist,spacy,1,0.9,mots_interdits_001_handicap,Handicap,carac handicap
 case_022,Spacy,test d'identification d un synonyme de malaldie,active,alerte active,spacy,1,0.79,mots_interdits_005_maladie,pathologies,
 case_023,Spacy,detection d un mots similaire à menteur,active,alerte active,spacy,1,0.78,mots_interdits_046_menteur,menteuse,
+case_024,Spacy,phrase sans contexte extension du cas 19 et 20,active,alerte active,gliner,1,0.6,gliner_ideologie_politique,extreme droite,
+case_025,Gliner,Test d identification d une malaide non presente dans les mots interdit,active,alerte active,gliner,1,0.76,gliner_maladie,diabète de type 2,
+case_027,Gliner,Detection GLiNER d une pathologie absente des mots interdits,active,alerte active,gliner,1,0.51,gliner_maladie,sclerose en plaques,
+case_028,ExpReg,Detection regex d un IBAN francais sans mot cle generique IBAN,active,alerte active,regex,1,0.95,IBAN_FR,FR76 3000 6000 0112 3456 7890 189,
+case_029,Spacy,variante du cas 26 avec accent sur montrée,active,alerte active,spacy,1,0.78,mots_interdits_045_agressif,agressive,
+case_030,Spacy,Detection par lemmatisation spaCy de agressives vers agressif sans synonyme configure,active,alerte active,spacy,1,0.78,mots_interdits_045_agressif,agressives,

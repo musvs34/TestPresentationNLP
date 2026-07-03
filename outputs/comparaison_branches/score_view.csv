@@ -46,3 +46,9 @@ case_021,ignored_by_whitelist,detecte puis ignore par whitelist,True,gliner,glin
 case_021,ignored_by_whitelist,detecte puis ignore par whitelist,True,spacy,mots_interdits_001_handicap,Handicap,exact,,0.9,,,carac handicap,Produit CARAC,le prospect souahite CARAC handicap
 case_022,active,alerte active,False,spacy,mots_interdits_005_maladie,pathologies,lemma,,0.79,,,,,la personne a plusieurs pathologies
 case_023,active,alerte active,False,spacy,mots_interdits_046_menteur,menteuse,lemma,,0.78,,,,,la personne est une menteuse
+case_024,active,alerte active,False,gliner,gliner_ideologie_politique,extreme droite,entity,,,0.6,,,,extreme droite
+case_025,active,alerte active,False,gliner,gliner_maladie,diabète de type 2,entity,,,0.76,,,,Le dossier mentionne un diabète de type 2.
+case_027,active,alerte active,False,gliner,gliner_maladie,sclerose en plaques,entity,,,0.51,,,,Le questionnaire signale une sclerose en plaques stabilisee.
+case_028,active,alerte active,False,regex,IBAN_FR,FR76 3000 6000 0112 3456 7890 189,regex,,,,0.95,,,Reference transmise: FR76 3000 6000 0112 3456 7890 189.
+case_029,active,alerte active,False,spacy,mots_interdits_045_agressif,agressive,lemma,,0.78,,,,,La cliente s'est montrée agressive pendant l'entretien.
+case_030,active,alerte active,False,spacy,mots_interdits_045_agressif,agressives,lemma,,0.78,,,,,Les clientes sont agressives pendant l'entretien.

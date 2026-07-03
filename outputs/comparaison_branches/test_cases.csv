@@ -22,3 +22,10 @@ case_020,c'est un coureur il aime courir à l'extreme droite de la piste,Gliner,
 case_021,le prospect souahite CARAC handicap,Generic,test de la whiteList
 case_022,la personne a plusieurs pathologies,Spacy,test d'identification d un synonyme de malaldie
 case_023,la personne est une menteuse,Spacy,detection d un mots similaire à menteur
+case_024,extreme droite,Spacy,phrase sans contexte extension du cas 19 et 20
+case_025,Le dossier mentionne un diabète de type 2.,Gliner,Test d identification d une malaide non presente dans les mots interdit
+case_026,La cliente s'est montree agressive pendant l'entretien.,Spacy,Detection par lemmatisation spaCy de agressives vers agressif sans synonyme configure
+case_027,Le questionnaire signale une sclerose en plaques stabilisee.,Gliner,Detection GLiNER d une pathologie absente des mots interdits
+case_028,Reference transmise: FR76 3000 6000 0112 3456 7890 189.,ExpReg,Detection regex d un IBAN francais sans mot cle generique IBAN
+case_029,La cliente s'est montrée agressive pendant l'entretien.,Spacy,variante du cas 26 avec accent sur montrée
+case_030,Les clientes sont agressives pendant l'entretien.,Spacy,Detection par lemmatisation spaCy de agressives vers agressif sans synonyme configure

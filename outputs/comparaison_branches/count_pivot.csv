@@ -21,3 +21,9 @@ case_019,Gliner,vision politique,active,alerte active,0,1,0,0
 case_021,Generic,test de la whiteList,ignored_by_whitelist,detecte puis ignore par whitelist,1,2,0,1
 case_022,Spacy,test d'identification d un synonyme de malaldie,active,alerte active,0,0,0,1
 case_023,Spacy,detection d un mots similaire à menteur,active,alerte active,0,0,0,1
+case_024,Spacy,phrase sans contexte extension du cas 19 et 20,active,alerte active,0,1,0,0
+case_025,Gliner,Test d identification d une malaide non presente dans les mots interdit,active,alerte active,0,1,0,0
+case_027,Gliner,Detection GLiNER d une pathologie absente des mots interdits,active,alerte active,0,1,0,0
+case_028,ExpReg,Detection regex d un IBAN francais sans mot cle generique IBAN,active,alerte active,0,0,1,0
+case_029,Spacy,variante du cas 26 avec accent sur montrée,active,alerte active,0,0,0,1
+case_030,Spacy,Detection par lemmatisation spaCy de agressives vers agressif sans synonyme configure,active,alerte active,0,0,0,1

@@ -22,3 +22,10 @@ case_020,Gliner, fausse ressemblance avec vision politique,generic | spacy | gli
 case_021,Generic,test de la whiteList,generic | spacy | gliner | regex,4,0,4,0,0,0,0,,,,,"{'generic': 1, 'spacy': 1, 'gliner': 2}","{'generic': 1, 'spacy': 1, 'gliner': 2}",{}
 case_022,Spacy,test d'identification d un synonyme de malaldie,generic | spacy | gliner | regex,1,1,0,0,1,0,0,,0.79,,,{'spacy': 1},{},{}
 case_023,Spacy,detection d un mots similaire à menteur,generic | spacy | gliner | regex,1,1,0,0,1,0,0,,0.78,,,{'spacy': 1},{},{}
+case_024,Spacy,phrase sans contexte extension du cas 19 et 20,generic | spacy | gliner | regex,1,1,0,0,0,1,0,,,0.6,,{'gliner': 1},{},{}
+case_025,Gliner,Test d identification d une malaide non presente dans les mots interdit,generic | spacy | gliner | regex,1,1,0,0,0,1,0,,,0.76,,{'gliner': 1},{},{}
+case_026,Spacy,Detection par lemmatisation spaCy de agressives vers agressif sans synonyme configure,generic | spacy | gliner | regex,0,0,0,0,0,0,0,,,,,{},{},{}
+case_027,Gliner,Detection GLiNER d une pathologie absente des mots interdits,generic | spacy | gliner | regex,1,1,0,0,0,1,0,,,0.51,,{'gliner': 1},{},{}
+case_028,ExpReg,Detection regex d un IBAN francais sans mot cle generique IBAN,generic | spacy | gliner | regex,1,1,0,0,0,0,1,,,,0.95,{'regex': 1},{},{}
+case_029,Spacy,variante du cas 26 avec accent sur montrée,generic | spacy | gliner | regex,1,1,0,0,1,0,0,,0.78,,,{'spacy': 1},{},{}
+case_030,Spacy,Detection par lemmatisation spaCy de agressives vers agressif sans synonyme configure,generic | spacy | gliner | regex,1,1,0,0,1,0,0,,0.78,,,{'spacy': 1},{},{}
