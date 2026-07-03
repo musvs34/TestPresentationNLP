@@ -1,0 +1,24 @@
+﻿case_id,control_family,comment,enabled_branches,raw_finding_count,finding_count,whitelist_ignored_count,generic_finding_count,spacy_finding_count,gliner_finding_count,regex_finding_count,generic_max_score,spacy_max_score,gliner_max_score,regex_max_score,raw_finding_count_by_engine,whitelist_ignored_count_by_engine,branch_errors
+case_001,generic,Terme interdit issu de Mots_interdits: Handicap.,generic | spacy | gliner | regex,3,3,0,1,1,1,0,0.9,0.9,0.66,,"{'generic': 1, 'spacy': 1, 'gliner': 1}",{},{}
+case_002,generic,Terme interdit issu de Mots_interdits: cancer.,generic | spacy | gliner | regex,3,3,0,1,1,1,0,0.9,0.9,0.54,,"{'generic': 1, 'spacy': 1, 'gliner': 1}",{},{}
+case_003,generic,Terme interdit issu de Mots_interdits: depression.,generic | spacy | gliner | regex,2,2,0,1,1,0,0,0.9,0.9,,,"{'generic': 1, 'spacy': 1}",{},{}
+case_004,generic,Expression interdite issue de Mots_interdits: traitement lourd.,generic | spacy | gliner | regex,2,2,0,1,1,0,0,0.9,0.9,,,"{'generic': 1, 'spacy': 1}",{},{}
+case_005,generic,Terme interdit issu de Mots_interdits: menteur.,generic | spacy | gliner | regex,2,2,0,1,1,0,0,0.85,0.85,,,"{'generic': 1, 'spacy': 1}",{},{}
+case_006,generic,Expression interdite issue de Mots_interdits: Client desagreable.,generic | spacy | gliner | regex,2,2,0,1,1,0,0,0.85,0.85,,,"{'generic': 1, 'spacy': 1}",{},{}
+case_007,generic,Expression interdite issue de Mots_interdits: numero de securite sociale.,generic | spacy | gliner | regex,2,2,0,1,1,0,0,0.85,0.85,,,"{'generic': 1, 'spacy': 1}",{},{}
+case_008,generic,Expression interdite issue de Mots_interdits: adresse email privee.,generic | spacy | gliner | regex,2,2,0,1,1,0,0,0.85,0.85,,,"{'generic': 1, 'spacy': 1}",{},{}
+case_009,generic,Expression interdite issue de Mots_interdits: mot de passe.,generic | spacy | gliner | regex,2,2,0,1,1,0,0,0.85,0.85,,,"{'generic': 1, 'spacy': 1}",{},{}
+case_010,generic,Expression interdite issue de Mots_interdits: code CVV.,generic | spacy | gliner | regex,2,2,0,1,1,0,0,0.85,0.85,,,"{'generic': 1, 'spacy': 1}",{},{}
+case_011,generic,Faute volontaire sur Mots_interdits: depression.,generic | spacy | gliner | regex,2,2,0,1,1,0,0,0.75,0.74,,,"{'generic': 1, 'spacy': 1}",{},{}
+case_012,generic,Faute volontaire sur Mots_interdits: Handicap.,generic | spacy | gliner | regex,4,4,0,1,1,2,0,0.75,0.74,0.72,,"{'generic': 1, 'spacy': 1, 'gliner': 2}",{},{}
+case_013,generic,Meme racine/pluriel autour de Mots_interdits: alcoolique.,generic | spacy | gliner | regex,4,4,0,2,2,0,0,0.82,0.83,,,"{'generic': 2, 'spacy': 2}",{},{}
+case_014,generic,Faute volontaire sur Mots_interdits: numero de securite sociale.,generic | spacy | gliner | regex,3,3,0,1,2,0,0,0.7,0.78,,,"{'generic': 1, 'spacy': 2}",{},{}
+case_015,generic,Faute volontaire sur Mots_interdits: traitement lourd.,generic | spacy | gliner | regex,2,2,0,1,1,0,0,0.75,0.74,,,"{'generic': 1, 'spacy': 1}",{},{}
+case_016,ExpReg,numero de telephone avec des caracteres speciaux pour la separation,generic | spacy | gliner | regex,1,1,0,0,0,0,1,,,,0.9,{'regex': 1},{},{}
+case_017,ExpReg,contact email,generic | spacy | gliner | regex,1,1,0,0,0,0,1,,,,0.95,{'regex': 1},{},{}
+case_018,ExpREg,racine commune mais pas synonyme ,generic | spacy | gliner | regex,1,1,0,0,0,1,0,,,0.76,,{'gliner': 1},{},{}
+case_019,Gliner,vision politique,generic | spacy | gliner | regex,1,1,0,0,0,1,0,,,0.55,,{'gliner': 1},{},{}
+case_020,Gliner, fausse ressemblance avec vision politique,generic | spacy | gliner | regex,0,0,0,0,0,0,0,,,,,{},{},{}
+case_021,Generic,test de la whiteList,generic | spacy | gliner | regex,4,0,4,0,0,0,0,,,,,"{'generic': 1, 'spacy': 1, 'gliner': 2}","{'generic': 1, 'spacy': 1, 'gliner': 2}",{}
+case_022,Spacy,test d'identification d un synonyme de malaldie,generic | spacy | gliner | regex,1,1,0,0,1,0,0,,0.79,,,{'spacy': 1},{},{}
+case_023,Spacy,detection d un mots similaire à menteur,generic | spacy | gliner | regex,1,1,0,0,1,0,0,,0.78,,,{'spacy': 1},{},{}
