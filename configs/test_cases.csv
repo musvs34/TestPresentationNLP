@@ -14,3 +14,9 @@ case_012,Le client est handicaape depuis plusieurs annees.,generic,Faute volonta
 case_013,La note parle de problemes alcooliques.,generic,Meme racine/pluriel autour de Mots_interdits: alcoolique.
 case_014,Le dossier contient un numero de securite social.,generic,Faute volontaire sur Mots_interdits: numero de securite sociale.
 case_015,Le client a un traitement lour.,generic,Faute volontaire sur Mots_interdits: traitement lourd.
+case_016,contact 06.02 01-0908,ExpReg,numero de telephone avec des caracteres speciaux pour la separation
+case_017, contact test@yahoo.fr,ExpReg,contact email
+case_018, autiste,ExpREg,racine commune mais pas synonyme 
+case_019,c'est une personne qui siege a l'assemblé et a une viso à l'extreme droite,Gliner,vision politique
+case_020,c'est un coureur il aime courir à l'extreme droite de la piste,Gliner, fausse ressemblance avec vision politique
+case_021,le prospect souahite CARAC handicap,Generic,test de la whiteList
