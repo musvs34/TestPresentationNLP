@@ -1,0 +1,23 @@
+﻿case_id,control_family,comment,detection_status,decision,generic,gliner,regex,spacy
+case_001,generic,Terme interdit issu de Mots_interdits: Handicap.,active,alerte active,1,1,0,1
+case_002,generic,Terme interdit issu de Mots_interdits: cancer.,active,alerte active,1,1,0,1
+case_003,generic,Terme interdit issu de Mots_interdits: depression.,active,alerte active,1,0,0,1
+case_004,generic,Expression interdite issue de Mots_interdits: traitement lourd.,active,alerte active,1,0,0,1
+case_005,generic,Terme interdit issu de Mots_interdits: menteur.,active,alerte active,1,0,0,1
+case_006,generic,Expression interdite issue de Mots_interdits: Client desagreable.,active,alerte active,1,0,0,1
+case_007,generic,Expression interdite issue de Mots_interdits: numero de securite sociale.,active,alerte active,1,0,0,1
+case_008,generic,Expression interdite issue de Mots_interdits: adresse email privee.,active,alerte active,1,0,0,1
+case_009,generic,Expression interdite issue de Mots_interdits: mot de passe.,active,alerte active,1,0,0,1
+case_010,generic,Expression interdite issue de Mots_interdits: code CVV.,active,alerte active,1,0,0,1
+case_011,generic,Faute volontaire sur Mots_interdits: depression.,active,alerte active,1,0,0,1
+case_012,generic,Faute volontaire sur Mots_interdits: Handicap.,active,alerte active,1,2,0,1
+case_013,generic,Meme racine/pluriel autour de Mots_interdits: alcoolique.,active,alerte active,2,0,0,2
+case_014,generic,Faute volontaire sur Mots_interdits: numero de securite sociale.,active,alerte active,1,0,0,2
+case_015,generic,Faute volontaire sur Mots_interdits: traitement lourd.,active,alerte active,1,0,0,1
+case_016,ExpReg,numero de telephone avec des caracteres speciaux pour la separation,active,alerte active,0,0,1,0
+case_017,ExpReg,contact email,active,alerte active,0,0,1,0
+case_018,ExpREg,racine commune mais pas synonyme ,active,alerte active,0,1,0,0
+case_019,Gliner,vision politique,active,alerte active,0,1,0,0
+case_021,Generic,test de la whiteList,ignored_by_whitelist,detecte puis ignore par whitelist,1,2,0,1
+case_022,Spacy,test d'identification d un synonyme de malaldie,active,alerte active,0,0,0,1
+case_023,Spacy,detection d un mots similaire à menteur,active,alerte active,0,0,0,1

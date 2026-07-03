@@ -1,0 +1,48 @@
+﻿case_id,detection_status,decision,ignored_by_whitelist,detection_engine,predicted_key,matched_term,detection_type,generic_score,spacy_score,gliner_score,regex_score,whitelist_expression,whitelist_reason,evidence
+case_001,active,alerte active,False,generic,mots_interdits_001_handicap,Handicap,exact,0.9,,,,,,Le dossier mentionne un handicap declare par le client.
+case_001,active,alerte active,False,gliner,gliner_handicap,handicap,entity,,,0.66,,,,Le dossier mentionne un handicap declare par le client.
+case_001,active,alerte active,False,spacy,mots_interdits_001_handicap,Handicap,exact,,0.9,,,,,Le dossier mentionne un handicap declare par le client.
+case_002,active,alerte active,False,generic,mots_interdits_006_cancer,cancer,exact,0.9,,,,,,La note interne indique un antecedent de cancer.
+case_002,active,alerte active,False,gliner,gliner_maladie,cancer,entity,,,0.54,,,,La note interne indique un antecedent de cancer.
+case_002,active,alerte active,False,spacy,mots_interdits_006_cancer,cancer,exact,,0.9,,,,,La note interne indique un antecedent de cancer.
+case_003,active,alerte active,False,generic,mots_interdits_008_depression,dépression,exact,0.9,,,,,,Le client parle d'une depression ancienne dans le formulaire.
+case_003,active,alerte active,False,spacy,mots_interdits_008_depression,dépression,exact,,0.9,,,,,Le client parle d'une depression ancienne dans le formulaire.
+case_004,active,alerte active,False,generic,mots_interdits_016_traitement_lourd,traitement lourd,exact,0.9,,,,,,La zone libre indique un traitement lourd en cours.
+case_004,active,alerte active,False,spacy,mots_interdits_016_traitement_lourd,traitement lourd,exact,,0.9,,,,,La zone libre indique un traitement lourd en cours.
+case_005,active,alerte active,False,generic,mots_interdits_046_menteur,menteur,exact,0.85,,,,,,Le conseiller a ecrit que le client est menteur.
+case_005,active,alerte active,False,spacy,mots_interdits_046_menteur,menteur,exact,,0.85,,,,,Le conseiller a ecrit que le client est menteur.
+case_006,active,alerte active,False,generic,mots_interdits_044_client_desagreable,Client désagréable,exact,0.85,,,,,,Commentaire interne: client desagreable lors de l'entretien.
+case_006,active,alerte active,False,spacy,mots_interdits_044_client_desagreable,Client désagréable,exact,,0.85,,,,,Commentaire interne: client desagreable lors de l'entretien.
+case_007,active,alerte active,False,generic,mots_interdits_066_numero_de_securite_sociale,numéro de sécurité sociale,exact,0.85,,,,,,Le dossier precise le numero de securite sociale du client.
+case_007,active,alerte active,False,spacy,mots_interdits_066_numero_de_securite_sociale,numéro de sécurité sociale,exact,,0.85,,,,,Le dossier precise le numero de securite sociale du client.
+case_008,active,alerte active,False,generic,mots_interdits_071_adresse_email_privee,adresse email privée,exact,0.85,,,,,,La fiche contient une adresse email privee de l'adherent.
+case_008,active,alerte active,False,spacy,mots_interdits_071_adresse_email_privee,adresse email privée,exact,,0.85,,,,,La fiche contient une adresse email privee de l'adherent.
+case_009,active,alerte active,False,generic,mots_interdits_077_mot_de_passe,mot de passe,exact,0.85,,,,,,Le document indique un mot de passe communique en clair.
+case_009,active,alerte active,False,spacy,mots_interdits_077_mot_de_passe,mot de passe,exact,,0.85,,,,,Le document indique un mot de passe communique en clair.
+case_010,active,alerte active,False,generic,mots_interdits_076_code_cvv,code CVV,exact,0.85,,,,,,La note mentionne un code CVV saisi en clair.
+case_010,active,alerte active,False,spacy,mots_interdits_076_code_cvv,code CVV,exact,,0.85,,,,,La note mentionne un code CVV saisi en clair.
+case_011,active,alerte active,False,generic,mots_interdits_008_depression,depresion,fuzzy,0.75,,,,,,Le dossier mentionne une depresion ancienne.
+case_011,active,alerte active,False,spacy,mots_interdits_008_depression,depresion,fuzzy,,0.74,,,,,Le dossier mentionne une depresion ancienne.
+case_012,active,alerte active,False,generic,mots_interdits_001_handicap,handicaape,fuzzy,0.75,,,,,,Le client est handicaape depuis plusieurs annees.
+case_012,active,alerte active,False,gliner,gliner_handicap,handicaape,entity,,,0.5,,,,Le client est handicaape depuis plusieurs annees.
+case_012,active,alerte active,False,gliner,gliner_religion,handicaape,entity,,,0.72,,,,Le client est handicaape depuis plusieurs annees.
+case_012,active,alerte active,False,spacy,mots_interdits_001_handicap,handicaape,fuzzy,,0.74,,,,,Le client est handicaape depuis plusieurs annees.
+case_013,active,alerte active,False,generic,mots_interdits_012_alcoolique,alcooliques,root,0.82,,,,,,La note parle de problemes alcooliques.
+case_013,active,alerte active,False,generic,mots_interdits_054_alcoolique,alcooliques,root,0.77,,,,,,La note parle de problemes alcooliques.
+case_013,active,alerte active,False,spacy,mots_interdits_012_alcoolique,alcooliques,lemma,,0.83,,,,,La note parle de problemes alcooliques.
+case_013,active,alerte active,False,spacy,mots_interdits_054_alcoolique,alcooliques,lemma,,0.78,,,,,La note parle de problemes alcooliques.
+case_014,active,alerte active,False,generic,mots_interdits_066_numero_de_securite_sociale,numero de securite social,fuzzy,0.7,,,,,,Le dossier contient un numero de securite social.
+case_014,active,alerte active,False,spacy,mots_interdits_055_marginal,social,fuzzy,,0.69,,,,,Le dossier contient un numero de securite social.
+case_014,active,alerte active,False,spacy,mots_interdits_066_numero_de_securite_sociale,numero de securite social,lemma,,0.78,,,,,Le dossier contient un numero de securite social.
+case_015,active,alerte active,False,generic,mots_interdits_016_traitement_lourd,traitement lour,fuzzy,0.75,,,,,,Le client a un traitement lour.
+case_015,active,alerte active,False,spacy,mots_interdits_016_traitement_lourd,traitement lour,fuzzy,,0.74,,,,,Le client a un traitement lour.
+case_016,active,alerte active,False,regex,PHONE_NUMBER_FR,06.02 01-0908,regex,,,,0.9,,,contact 06.02 01-0908
+case_017,active,alerte active,False,regex,EMAIL_ADDRESS,test@yahoo.fr,regex,,,,0.95,,,contact test@yahoo.fr
+case_018,active,alerte active,False,gliner,gliner_autisme,autiste,entity,,,0.76,,,,autiste
+case_019,active,alerte active,False,gliner,gliner_ideologie_politique,extreme droite,entity,,,0.55,,,,c'est une personne qui siege a l'assemblé et a une vision à l'extreme droite
+case_021,ignored_by_whitelist,detecte puis ignore par whitelist,True,generic,mots_interdits_001_handicap,Handicap,exact,0.9,,,,carac handicap,Produit CARAC,le prospect souahite CARAC handicap
+case_021,ignored_by_whitelist,detecte puis ignore par whitelist,True,gliner,gliner_handicap,handicap,entity,,,0.77,,carac handicap,Produit CARAC,le prospect souahite CARAC handicap
+case_021,ignored_by_whitelist,detecte puis ignore par whitelist,True,gliner,gliner_religion,CARAC,entity,,,0.56,,carac handicap,Produit CARAC,le prospect souahite CARAC handicap
+case_021,ignored_by_whitelist,detecte puis ignore par whitelist,True,spacy,mots_interdits_001_handicap,Handicap,exact,,0.9,,,carac handicap,Produit CARAC,le prospect souahite CARAC handicap
+case_022,active,alerte active,False,spacy,mots_interdits_005_maladie,pathologies,lemma,,0.79,,,,,la personne a plusieurs pathologies
+case_023,active,alerte active,False,spacy,mots_interdits_046_menteur,menteuse,lemma,,0.78,,,,,la personne est une menteuse

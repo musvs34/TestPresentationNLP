@@ -1,0 +1,24 @@
+﻿case_id,text,control_family,comment
+case_001,Le dossier mentionne un handicap declare par le client.,generic,Terme interdit issu de Mots_interdits: Handicap.
+case_002,La note interne indique un antecedent de cancer.,generic,Terme interdit issu de Mots_interdits: cancer.
+case_003,Le client parle d'une depression ancienne dans le formulaire.,generic,Terme interdit issu de Mots_interdits: depression.
+case_004,La zone libre indique un traitement lourd en cours.,generic,Expression interdite issue de Mots_interdits: traitement lourd.
+case_005,Le conseiller a ecrit que le client est menteur.,generic,Terme interdit issu de Mots_interdits: menteur.
+case_006,Commentaire interne: client desagreable lors de l'entretien.,generic,Expression interdite issue de Mots_interdits: Client desagreable.
+case_007,Le dossier precise le numero de securite sociale du client.,generic,Expression interdite issue de Mots_interdits: numero de securite sociale.
+case_008,La fiche contient une adresse email privee de l'adherent.,generic,Expression interdite issue de Mots_interdits: adresse email privee.
+case_009,Le document indique un mot de passe communique en clair.,generic,Expression interdite issue de Mots_interdits: mot de passe.
+case_010,La note mentionne un code CVV saisi en clair.,generic,Expression interdite issue de Mots_interdits: code CVV.
+case_011,Le dossier mentionne une depresion ancienne.,generic,Faute volontaire sur Mots_interdits: depression.
+case_012,Le client est handicaape depuis plusieurs annees.,generic,Faute volontaire sur Mots_interdits: Handicap.
+case_013,La note parle de problemes alcooliques.,generic,Meme racine/pluriel autour de Mots_interdits: alcoolique.
+case_014,Le dossier contient un numero de securite social.,generic,Faute volontaire sur Mots_interdits: numero de securite sociale.
+case_015,Le client a un traitement lour.,generic,Faute volontaire sur Mots_interdits: traitement lourd.
+case_016,contact 06.02 01-0908,ExpReg,numero de telephone avec des caracteres speciaux pour la separation
+case_017, contact test@yahoo.fr,ExpReg,contact email
+case_018, autiste,ExpREg,racine commune mais pas synonyme 
+case_019,c'est une personne qui siege a l'assemblé et a une vision à l'extreme droite,Gliner,vision politique
+case_020,c'est un coureur il aime courir à l'extreme droite de la piste,Gliner, fausse ressemblance avec vision politique
+case_021,le prospect souahite CARAC handicap,Generic,test de la whiteList
+case_022,la personne a plusieurs pathologies,Spacy,test d'identification d un synonyme de malaldie
+case_023,la personne est une menteuse,Spacy,detection d un mots similaire à menteur
