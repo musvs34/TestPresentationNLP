@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7fbff"/>
+      <stop offset="0.52" stop-color="#eef6ff"/>
+      <stop offset="1" stop-color="#f8fafc"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0078d4"/>
+      <stop offset="1" stop-color="#2b88d8"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.94"/>
+      <stop offset="1" stop-color="#f7fbff" stop-opacity="0.86"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#0f172a" flood-opacity="0.14"/>
+    </filter>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0078d4"/>
+    </marker>
+    <style>
+      .title { font-family: "Segoe UI", Arial, sans-serif; font-size: 48px; font-weight: 650; fill: #111827; }
+      .subtitle { font-family: "Segoe UI", Arial, sans-serif; font-size: 24px; fill: #526579; }
+      .section { font-family: "Segoe UI", Arial, sans-serif; font-size: 25px; font-weight: 650; fill: #0f172a; }
+      .label { font-family: "Segoe UI", Arial, sans-serif; font-size: 22px; font-weight: 600; fill: #111827; }
+      .body { font-family: "Segoe UI", Arial, sans-serif; font-size: 19px; fill: #44546a; }
+      .small { font-family: "Segoe UI", Arial, sans-serif; font-size: 16px; fill: #64748b; }
+      .white { fill: #ffffff; }
+      .blueText { fill: #0078d4; }
+      .line { stroke: #0078d4; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+      .thin { stroke: #d7e7f7; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+  <circle cx="180" cy="170" r="170" fill="#dff1ff" opacity="0.65"/>
+  <circle cx="1740" cy="895" r="220" fill="#e6f4ff" opacity="0.75"/>
+
+  <text x="96" y="96" class="title">Elements sources a fournir aux 4 branches</text>
+  <text x="98" y="136" class="subtitle">Chaque branche consomme le socle NLP, realise un traitement dedie et couvre un perimetre clair.</text>
+
+  <rect x="88" y="190" width="455" height="720" rx="28" fill="url(#panel)" stroke="#dbeafe" filter="url(#shadow)"/>
+  <rect x="118" y="220" width="110" height="42" rx="21" fill="#e8f3ff"/>
+  <text x="145" y="249" class="body blueText" font-weight="700">INPUTS</text>
+  <text x="118" y="304" class="section">Sources attendues</text>
+
+  <g filter="url(#softShadow)">
+    <rect x="122" y="342" width="382" height="58" rx="16" fill="#ffffff" stroke="#dbeafe"/>
+    <rect x="142" y="360" width="22" height="22" rx="6" fill="#0078d4"/>
+    <text x="180" y="378" class="label">Mots interdits</text>
+
+    <rect x="122" y="416" width="382" height="58" rx="16" fill="#ffffff" stroke="#dbeafe"/>
+    <rect x="142" y="434" width="22" height="22" rx="6" fill="#50e6ff"/>
+    <text x="180" y="452" class="label">Synonymes</text>
+
+    <rect x="122" y="490" width="382" height="58" rx="16" fill="#ffffff" stroke="#dbeafe"/>
+    <rect x="142" y="508" width="22" height="22" rx="6" fill="#107c10"/>
+    <text x="180" y="526" class="label">Termes obligatoires</text>
+
+    <rect x="122" y="564" width="382" height="58" rx="16" fill="#ffffff" stroke="#dbeafe"/>
+    <rect x="142" y="582" width="22" height="22" rx="6" fill="#8764b8"/>
+    <text x="180" y="600" class="label">Taxonomie / categories</text>
+
+    <rect x="122" y="638" width="382" height="58" rx="16" fill="#ffffff" stroke="#dbeafe"/>
+    <rect x="142" y="656" width="22" height="22" rx="6" fill="#ffaa44"/>
+    <text x="180" y="674" class="label">Regles NLP</text>
+
+    <rect x="122" y="712" width="382" height="58" rx="16" fill="#ffffff" stroke="#dbeafe"/>
+    <rect x="142" y="730" width="22" height="22" rx="6" fill="#e81123"/>
+    <text x="180" y="748" class="label">Corpus d'exemples</text>
+  </g>
+
+  <text x="122" y="830" class="small">Formats possibles : CSV, Excel, JSON, dictionnaires, exports applicatifs.</text>
+  <text x="122" y="860" class="small">Gouvernance : proprietaire, frequence de mise a jour, validation.</text>
+
+  <rect x="715" y="432" width="210" height="210" rx="38" fill="url(#blue)" filter="url(#shadow)"/>
+  <rect x="758" y="475" width="124" height="124" rx="28" fill="#ffffff" opacity="0.18"/>
+  <path d="M782 538h76M820 500v76" stroke="#ffffff" stroke-width="16" stroke-linecap="round"/>
+  <text x="744" y="690" class="section" fill="#0f172a">Socle NLP</text>
+  <text x="685" y="724" class="small">Alimentation commune des branches</text>
+
+  <path class="line" d="M545 550 C610 550, 635 537, 704 537"/>
+
+  <g>
+    <path class="line" d="M928 537 C1010 290, 1055 260, 1138 260"/>
+    <path class="line" d="M928 537 C1010 440, 1055 420, 1138 420"/>
+    <path class="line" d="M928 537 C1010 635, 1055 650, 1138 650"/>
+    <path class="line" d="M928 537 C1010 810, 1055 835, 1138 835"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="1160" y="188" width="650" height="150" rx="24" fill="#ffffff" stroke="#cfe6ff"/>
+    <rect x="1184" y="216" width="82" height="82" rx="20" fill="#e8f3ff"/>
+    <text x="1211" y="269" class="section blueText">1</text>
+    <text x="1290" y="234" class="section">Branche Detection</text>
+    <text x="1290" y="272" class="body">Realise : repere mots interdits, alertes, ecarts lexicaux.</text>
+    <text x="1290" y="302" class="body">Couvre : conformite, risques de formulation, exclusions.</text>
+
+    <rect x="1160" y="368" width="650" height="150" rx="24" fill="#ffffff" stroke="#cfe6ff"/>
+    <rect x="1184" y="396" width="82" height="82" rx="20" fill="#e8f3ff"/>
+    <text x="1211" y="449" class="section blueText">2</text>
+    <text x="1290" y="414" class="section">Branche Semantique</text>
+    <text x="1290" y="452" class="body">Realise : rapproche synonymes, variantes et intentions.</text>
+    <text x="1290" y="482" class="body">Couvre : equivalences, enrichissement, normalisation.</text>
+
+    <rect x="1160" y="598" width="650" height="150" rx="24" fill="#ffffff" stroke="#cfe6ff"/>
+    <rect x="1184" y="626" width="82" height="82" rx="20" fill="#e8f3ff"/>
+    <text x="1211" y="679" class="section blueText">3</text>
+    <text x="1290" y="644" class="section">Branche Classification</text>
+    <text x="1290" y="682" class="body">Realise : affecte contenus aux categories et cas d'usage.</text>
+    <text x="1290" y="712" class="body">Couvre : taxonomie, routage, priorisation, reporting.</text>
+
+    <rect x="1160" y="778" width="650" height="150" rx="24" fill="#ffffff" stroke="#cfe6ff"/>
+    <rect x="1184" y="806" width="82" height="82" rx="20" fill="#e8f3ff"/>
+    <text x="1211" y="859" class="section blueText">4</text>
+    <text x="1290" y="824" class="section">Branche Qualite</text>
+    <text x="1290" y="862" class="body">Realise : controle coherence, completude et exceptions.</text>
+    <text x="1290" y="892" class="body">Couvre : fiabilite, validation, restitution exploitable.</text>
+  </g>
+
+  <rect x="92" y="948" width="1728" height="48" rx="24" fill="#ffffff" opacity="0.72" stroke="#dbeafe"/>
+  <text x="124" y="980" class="small">Lecture : les sources alimentent un socle commun, puis chaque branche transforme ces inputs en controles, classifications ou restitutions specifiques.</text>
+</svg>
