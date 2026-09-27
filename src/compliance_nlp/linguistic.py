@@ -97,8 +97,18 @@ def _content_tokens(doc: Any) -> list[Any]:
     ]
 
 
-def _phrase_tokens(nlp: Any, phrase: str) -> list[Any]:
-    return _content_tokens(nlp(phrase))
+def _phrase_tokens(
+    nlp: Any,
+    phrase: str,
+    phrase_cache: dict[str, list[Any]] | None = None,
+) -> list[Any]:
+    if phrase_cache is not None and phrase in phrase_cache:
+        return phrase_cache[phrase]
+
+    tokens = _content_tokens(nlp(phrase))
+    if phrase_cache is not None:
+        phrase_cache[phrase] = tokens
+    return tokens
 
 
 def _surface_text(tokens: list[Any]) -> str:
@@ -146,8 +156,9 @@ def _find_lemma_match(
     configured_term: str,
     nlp: Any,
     base_score: float,
+    phrase_cache: dict[str, list[Any]] | None = None,
 ) -> LinguisticMatch | None:
-    term_tokens = _phrase_tokens(nlp, configured_term)
+    term_tokens = _phrase_tokens(nlp, configured_term, phrase_cache)
     if not term_tokens:
         return None
 
@@ -174,8 +185,9 @@ def _find_root_match(
     configured_term: str,
     nlp: Any,
     base_score: float,
+    phrase_cache: dict[str, list[Any]] | None = None,
 ) -> LinguisticMatch | None:
-    term_tokens = _phrase_tokens(nlp, configured_term)
+    term_tokens = _phrase_tokens(nlp, configured_term, phrase_cache)
     if len(term_tokens) != 1:
         return None
 
@@ -201,8 +213,9 @@ def _find_fuzzy_match(
     nlp: Any,
     base_score: float,
     threshold: float,
+    phrase_cache: dict[str, list[Any]] | None = None,
 ) -> LinguisticMatch | None:
-    term_tokens = _phrase_tokens(nlp, configured_term)
+    term_tokens = _phrase_tokens(nlp, configured_term, phrase_cache)
     if not term_tokens:
         return None
 
@@ -277,27 +290,56 @@ def _best_match_for_rule(
     rule: GenericDetectionRule,
     nlp: Any,
     synonym_map: dict[str, tuple[str, ...]],
+    tokens: list[Any] | None = None,
+    normalized_section: str | None = None,
+    phrase_cache: dict[str, list[Any]] | None = None,
 ) -> LinguisticMatch | None:
-    doc = nlp(section_text)
-    tokens = _content_tokens(doc)
-    normalized_section = normalize_for_matching(section_text)
+    if tokens is None:
+        tokens = _content_tokens(nlp(section_text))
+    normalized_section = normalized_section or normalize_for_matching(section_text)
     best_match: LinguisticMatch | None = None
 
     for configured_term in rule.terms:
         candidates = [
             _find_exact_match(normalized_section, configured_term, False, rule.base_score),
-            _find_lemma_match(tokens, configured_term, nlp, rule.base_score),
-            _find_root_match(tokens, configured_term, nlp, rule.base_score),
-            _find_fuzzy_match(tokens, configured_term, nlp, rule.base_score, rule.fuzzy_threshold),
+            _find_lemma_match(tokens, configured_term, nlp, rule.base_score, phrase_cache),
+            _find_root_match(tokens, configured_term, nlp, rule.base_score, phrase_cache),
+            _find_fuzzy_match(
+                tokens,
+                configured_term,
+                nlp,
+                rule.base_score,
+                rule.fuzzy_threshold,
+                phrase_cache,
+            ),
         ]
         best_match = _pick_best(best_match, candidates)
 
     for synonym in _synonyms_for_rule_terms(rule, synonym_map):
         candidates = [
             _find_exact_match(normalized_section, synonym, True, rule.base_score),
-            _find_lemma_match(tokens, synonym, nlp, _score(rule.base_score, -0.04)),
-            _find_root_match(tokens, synonym, nlp, _score(rule.base_score, -0.04)),
-            _find_fuzzy_match(tokens, synonym, nlp, rule.base_score, rule.fuzzy_threshold),
+            _find_lemma_match(
+                tokens,
+                synonym,
+                nlp,
+                _score(rule.base_score, -0.04),
+                phrase_cache,
+            ),
+            _find_root_match(
+                tokens,
+                synonym,
+                nlp,
+                _score(rule.base_score, -0.04),
+                phrase_cache,
+            ),
+            _find_fuzzy_match(
+                tokens,
+                synonym,
+                nlp,
+                rule.base_score,
+                rule.fuzzy_threshold,
+                phrase_cache,
+            ),
         ]
         best_match = _pick_best(best_match, candidates)
 
@@ -313,6 +355,8 @@ def analyze_linguistic_section(
     spacy_model: str = DEFAULT_SPACY_MODEL,
     spacy_synonyms_path: str = DEFAULT_SPACY_SYNONYMS_FILE,
     synonym_map: dict[str, tuple[str, ...]] | None = None,
+    doc: Any | None = None,
+    phrase_cache: dict[str, list[Any]] | None = None,
 ) -> list[Finding]:
     """Apply the optional spaCy branch to one section."""
 
@@ -323,13 +367,25 @@ def analyze_linguistic_section(
 
     nlp = nlp or load_spacy_model(spacy_model)
     synonym_map = synonym_map if synonym_map is not None else load_linguistic_synonym_map(spacy_synonyms_path)
+    doc = doc if doc is not None else nlp(compact_section)
+    tokens = _content_tokens(doc)
+    normalized_section = normalize_for_matching(compact_section)
+    phrase_cache = phrase_cache if phrase_cache is not None else {}
     scoped_rules = [
         rule for rule in generic_rules if section_name in rule.section_scope or "*" in rule.section_scope
     ]
 
     whitelist_terms = whitelist_terms or []
     for rule in scoped_rules:
-        match = _best_match_for_rule(compact_section, rule, nlp, synonym_map)
+        match = _best_match_for_rule(
+            compact_section,
+            rule,
+            nlp,
+            synonym_map,
+            tokens=tokens,
+            normalized_section=normalized_section,
+            phrase_cache=phrase_cache,
+        )
         if match is None:
             continue
         if rule.applies_whitelist and _is_whitelisted(
@@ -369,29 +425,64 @@ def analyze_linguistic_section(
     return findings
 
 
+def analyze_linguistic_documents(
+    documents: list[tuple[str, str]],
+    generic_rules: list[GenericDetectionRule],
+    whitelist_terms: list[WhitelistTerm] | None = None,
+    spacy_model: str = DEFAULT_SPACY_MODEL,
+    spacy_synonyms_path: str = DEFAULT_SPACY_SYNONYMS_FILE,
+    batch_size: int = 256,
+) -> list[list[Finding]]:
+    """Apply spaCy to many documents with one batched pipeline pass."""
+
+    nlp = load_spacy_model(spacy_model)
+    synonym_map = load_linguistic_synonym_map(spacy_synonyms_path)
+    results: list[list[Finding]] = [[] for _ in documents]
+    compact_documents = [
+        (index, section_name, compact_text(section_text))
+        for index, (section_name, section_text) in enumerate(documents)
+    ]
+    non_empty_documents = [item for item in compact_documents if item[2]]
+    if not non_empty_documents:
+        return results
+
+    phrase_cache: dict[str, list[Any]] = {}
+    docs = nlp.pipe(
+        (section_text for _, _, section_text in non_empty_documents),
+        batch_size=max(1, batch_size),
+    )
+    for (index, section_name, section_text), doc in zip(non_empty_documents, docs):
+        results[index] = analyze_linguistic_section(
+            section_name,
+            section_text,
+            generic_rules,
+            whitelist_terms=whitelist_terms,
+            nlp=nlp,
+            spacy_model=spacy_model,
+            spacy_synonyms_path=spacy_synonyms_path,
+            synonym_map=synonym_map,
+            doc=doc,
+            phrase_cache=phrase_cache,
+        )
+    return results
+
+
 def analyze_linguistic_sections(
     sections: dict[str, str],
     generic_rules: list[GenericDetectionRule],
     whitelist_terms: list[WhitelistTerm] | None = None,
     spacy_model: str = DEFAULT_SPACY_MODEL,
     spacy_synonyms_path: str = DEFAULT_SPACY_SYNONYMS_FILE,
+    batch_size: int = 256,
 ) -> list[Finding]:
     """Apply the optional spaCy branch to all available sections."""
 
-    nlp = load_spacy_model(spacy_model)
-    synonym_map = load_linguistic_synonym_map(spacy_synonyms_path)
-    findings: list[Finding] = []
-    for section_name, section_text in sections.items():
-        findings.extend(
-            analyze_linguistic_section(
-                section_name,
-                section_text,
-                generic_rules,
-                whitelist_terms=whitelist_terms,
-                nlp=nlp,
-                spacy_model=spacy_model,
-                spacy_synonyms_path=spacy_synonyms_path,
-                synonym_map=synonym_map,
-            )
-        )
-    return findings
+    results = analyze_linguistic_documents(
+        list(sections.items()),
+        generic_rules,
+        whitelist_terms=whitelist_terms,
+        spacy_model=spacy_model,
+        spacy_synonyms_path=spacy_synonyms_path,
+        batch_size=batch_size,
+    )
+    return [finding for section_findings in results for finding in section_findings]

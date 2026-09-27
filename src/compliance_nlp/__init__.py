@@ -6,11 +6,12 @@ from .config import (
     refresh_spacy_synonyms_from_forbidden_words,
 )
 from .notebook import findings_to_records, results_to_dataframe, summarize_results
-from .pipeline import analyze_directory, analyze_file, load_results, save_results
+from .pipeline import analyze_directory, analyze_file, analyze_texts, load_results, save_results
 
 __all__ = [
     "analyze_directory",
     "analyze_file",
+    "analyze_texts",
     "findings_to_records",
     "load_generic_detection_rules",
     "load_results",

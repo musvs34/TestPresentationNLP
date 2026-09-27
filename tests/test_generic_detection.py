@@ -7,7 +7,7 @@ from compliance_nlp.config import (
 )
 from compliance_nlp.generic import analyze_generic_section
 from compliance_nlp.linguistic import _synonyms_for_rule_terms
-from compliance_nlp.pipeline import analyze_text
+from compliance_nlp.pipeline import analyze_text, analyze_texts
 
 
 def _write_generic_rules(path: Path) -> None:
@@ -263,3 +263,62 @@ def test_pipeline_can_enable_regex_branch() -> None:
     assert result.metadata["regex_max_score"] == 0.95
     assert {finding.rule_id for finding in result.findings} == {"EMAIL_ADDRESS", "PHONE_NUMBER_FR"}
     assert {finding.detection_engine for finding in result.findings} == {"regex"}
+
+
+def test_regex_branch_detects_valid_payment_cards_and_rejects_invalid_checksums() -> None:
+    result = analyze_text(
+        "sample.pdf",
+        "sample.pdf",
+        (
+            "Cartes de test 4111 1111 1111 1111 et 5555-5555-5555-4444. "
+            "La suite 4111 1111 1111 1112 ne doit pas etre detectee."
+        ),
+        enabled_branches=("regex",),
+    )
+
+    card_findings = [
+        finding for finding in result.findings if finding.rule_id == "PAYMENT_CARD_NUMBER"
+    ]
+
+    assert len(card_findings) == 2
+    assert {finding.matched_term for finding in card_findings} == {
+        "4111 1111 1111 1111",
+        "5555-5555-5555-4444",
+    }
+    assert {finding.regex_score for finding in card_findings} == {0.95}
+
+
+def test_batch_pipeline_matches_single_regex_results_and_deduplicates_texts() -> None:
+    documents = [
+        ("a", "notebook", "Contact test@example.com et carte 4111 1111 1111 1111."),
+        ("b", "notebook", "Contact test@example.com et carte 4111 1111 1111 1111."),
+        ("c", "notebook", "Telephone 06 05 01 04 04."),
+    ]
+
+    batch_results = analyze_texts(
+        documents,
+        generic_rules=[],
+        whitelist_terms=[],
+        enabled_branches=("regex",),
+        deduplicate_texts=True,
+    )
+    single_results = [
+        analyze_text(
+            document_name,
+            source_path,
+            text,
+            generic_rules=[],
+            whitelist_terms=[],
+            enabled_branches=("regex",),
+        )
+        for document_name, source_path, text in documents
+    ]
+
+    assert [
+        [finding.rule_id for finding in result.findings]
+        for result in batch_results
+    ] == [
+        [finding.rule_id for finding in result.findings]
+        for result in single_results
+    ]
+    assert batch_results[0].metadata["batch_unique_text_count"] == 2

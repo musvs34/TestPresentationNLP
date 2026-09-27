@@ -1,4 +1,4 @@
-from compliance_nlp.gliner_detector import analyze_gliner_section
+from compliance_nlp.gliner_detector import analyze_gliner_documents, analyze_gliner_section
 
 
 class FakeGlinerModel:
@@ -54,3 +54,30 @@ def test_gliner_keeps_single_label_list_compatibility() -> None:
     )
 
     assert model.calls == [("donnee de sante",)]
+
+
+class FakeBatchGlinerModel:
+    def __init__(self) -> None:
+        self.calls: list[tuple[tuple[str, ...], tuple[str, ...], int]] = []
+
+    def inference(self, texts, labels, threshold, batch_size):  # type: ignore[no-untyped-def]
+        self.calls.append((tuple(texts), tuple(labels), batch_size))
+        return [
+            [{"text": text, "label": labels[0], "score": 0.8}]
+            for text in texts
+        ]
+
+
+def test_gliner_batches_documents_while_preserving_label_groups() -> None:
+    model = FakeBatchGlinerModel()
+
+    results = analyze_gliner_documents(
+        [("document", "alpha"), ("document", "beta"), ("document", "gamma")],
+        labels={"groupe_1": ("label 1",), "groupe_2": ("label 2",)},
+        batch_size=2,
+        model=model,
+    )
+
+    assert len(model.calls) == 4
+    assert [len(findings) for findings in results] == [2, 2, 2]
+    assert {finding.title for finding in results[0]} == {"label 1", "label 2"}

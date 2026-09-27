@@ -204,6 +204,83 @@ def _deduplicate_findings(findings: list[Finding]) -> list[Finding]:
     )
 
 
+def _predict_entities_batch(  # type: ignore[no-untyped-def]
+    model,
+    texts: list[str],
+    labels: tuple[str, ...],
+    threshold: float,
+    batch_size: int,
+) -> list[list[dict[str, object]]]:
+    """Use the best batch API exposed by the installed GLiNER version."""
+
+    if hasattr(model, "inference"):
+        return model.inference(
+            texts,
+            list(labels),
+            threshold=threshold,
+            batch_size=max(1, batch_size),
+        )
+    if hasattr(model, "batch_predict_entities"):
+        return model.batch_predict_entities(
+            texts,
+            list(labels),
+            threshold=threshold,
+            batch_size=max(1, batch_size),
+        )
+    return [
+        model.predict_entities(text, list(labels), threshold=threshold)
+        for text in texts
+    ]
+
+
+def analyze_gliner_documents(
+    documents: list[tuple[str, str]],
+    labels: dict[str, list[str] | tuple[str, ...]] | list[str] | tuple[str, ...] | None = None,
+    threshold: float = DEFAULT_GLINER_THRESHOLD,
+    model_name: str = DEFAULT_GLINER_MODEL,
+    cache_dir: str | None = str(DEFAULT_MODEL_CACHE_DIR),
+    source_model: str = DEFAULT_GLINER_SOURCE_MODEL,
+    local_files_only: bool = False,
+    batch_size: int = 16,
+    model=None,  # type: ignore[no-untyped-def]
+) -> list[list[Finding]]:
+    """Apply GLiNER to many documents while preserving separate label groups."""
+
+    results: list[list[Finding]] = [[] for _ in documents]
+    compact_documents = [
+        (index, section_name, compact_text(section_text))
+        for index, (section_name, section_text) in enumerate(documents)
+    ]
+    non_empty_documents = [item for item in compact_documents if item[2]]
+    if not non_empty_documents:
+        return results
+
+    label_groups = _normalize_label_groups(labels)
+    if not label_groups:
+        return results
+
+    model = model or load_gliner_model(model_name, cache_dir, source_model, local_files_only)
+    resolved_batch_size = max(1, batch_size)
+
+    for label_group, resolved_labels in label_groups:
+        for batch_start in range(0, len(non_empty_documents), resolved_batch_size):
+            batch = non_empty_documents[batch_start : batch_start + resolved_batch_size]
+            batch_predictions = _predict_entities_batch(
+                model,
+                [section_text for _, _, section_text in batch],
+                resolved_labels,
+                threshold,
+                resolved_batch_size,
+            )
+            for (index, section_name, section_text), entities in zip(batch, batch_predictions):
+                for entity in entities:
+                    finding = _finding_from_entity(entity, section_name, section_text, label_group)
+                    if finding is not None:
+                        results[index].append(finding)
+
+    return [_deduplicate_findings(findings) for findings in results]
+
+
 def analyze_gliner_section(
     section_name: str,
     section_text: str,
@@ -217,29 +294,17 @@ def analyze_gliner_section(
 ) -> list[Finding]:
     """Apply GLiNER zero-shot entity recognition to one section."""
 
-    compact_section = compact_text(section_text)
-    if not compact_section:
-        return []
-
-    label_groups = _normalize_label_groups(labels)
-    if not label_groups:
-        return []
-
-    model = model or load_gliner_model(model_name, cache_dir, source_model, local_files_only)
-
-    findings: list[Finding] = []
-    for label_group, resolved_labels in label_groups:
-        entities = model.predict_entities(
-            compact_section,
-            list(resolved_labels),
-            threshold=threshold,
-        )
-        for entity in entities:
-            finding = _finding_from_entity(entity, section_name, compact_section, label_group)
-            if finding is not None:
-                findings.append(finding)
-
-    return _deduplicate_findings(findings)
+    return analyze_gliner_documents(
+        [(section_name, section_text)],
+        labels=labels,
+        threshold=threshold,
+        model_name=model_name,
+        cache_dir=cache_dir,
+        source_model=source_model,
+        local_files_only=local_files_only,
+        batch_size=1,
+        model=model,
+    )[0]
 
 
 def analyze_gliner_sections(
@@ -250,23 +315,18 @@ def analyze_gliner_sections(
     cache_dir: str | None = str(DEFAULT_MODEL_CACHE_DIR),
     source_model: str = DEFAULT_GLINER_SOURCE_MODEL,
     local_files_only: bool = False,
+    batch_size: int = 16,
 ) -> list[Finding]:
     """Apply GLiNER to all available sections."""
 
-    model = load_gliner_model(model_name, cache_dir, source_model, local_files_only)
-    findings: list[Finding] = []
-    for section_name, section_text in sections.items():
-        findings.extend(
-            analyze_gliner_section(
-                section_name,
-                section_text,
-                labels=labels,
-                threshold=threshold,
-                model_name=model_name,
-                cache_dir=cache_dir,
-                source_model=source_model,
-                local_files_only=local_files_only,
-                model=model,
-            )
-        )
-    return findings
+    results = analyze_gliner_documents(
+        list(sections.items()),
+        labels=labels,
+        threshold=threshold,
+        model_name=model_name,
+        cache_dir=cache_dir,
+        source_model=source_model,
+        local_files_only=local_files_only,
+        batch_size=batch_size,
+    )
+    return [finding for section_findings in results for finding in section_findings]

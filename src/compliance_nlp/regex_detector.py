@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Pattern
 
@@ -18,6 +19,25 @@ class RegexRule:
     title: str
     pattern: Pattern[str]
     score: float
+    validator: Callable[[str], bool] | None = None
+
+
+def _is_valid_payment_card_number(value: str) -> bool:
+    """Validate a 13-to-19-digit payment card number with the Luhn checksum."""
+
+    digits = [int(character) for character in value if character.isdigit()]
+    if not 13 <= len(digits) <= 19 or len(set(digits)) == 1:
+        return False
+
+    checksum = 0
+    parity = len(digits) % 2
+    for index, digit in enumerate(digits):
+        if index % 2 == parity:
+            digit *= 2
+            if digit > 9:
+                digit -= 9
+        checksum += digit
+    return checksum % 10 == 0
 
 
 REGEX_RULES = (
@@ -32,6 +52,13 @@ REGEX_RULES = (
         title="Numero de telephone francais",
         pattern=re.compile(r"(?<!\d)(?:\+33[\s.-]?|0)[1-9](?:[\s.-]?\d{2}){4}(?!\d)"),
         score=0.90,
+    ),
+    RegexRule(
+        entity_type="PAYMENT_CARD_NUMBER",
+        title="Numero de carte bancaire",
+        pattern=re.compile(r"(?<!\d)(?:\d[ -]?){12,18}\d(?!\d)"),
+        score=0.95,
+        validator=_is_valid_payment_card_number,
     ),
     RegexRule(
         entity_type="IBAN_FR",
@@ -66,6 +93,8 @@ def analyze_regex_section(
     for rule in rules:
         for match in rule.pattern.finditer(section_text):
             matched_text = match.group(0)
+            if rule.validator is not None and not rule.validator(matched_text):
+                continue
             findings.append(
                 Finding(
                     code=f"regex_{rule.entity_type.lower()}",

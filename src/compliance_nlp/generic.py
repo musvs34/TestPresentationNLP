@@ -150,9 +150,14 @@ def _pick_best(
     return max(valid_candidates, key=lambda candidate: candidate.score)
 
 
-def _best_match_for_rule(section_text: str, rule: GenericDetectionRule) -> GenericMatch | None:
-    normalized_section = normalize_for_matching(section_text)
-    tokens = tokenize_words(section_text)
+def _best_match_for_rule(
+    section_text: str,
+    rule: GenericDetectionRule,
+    normalized_section: str | None = None,
+    tokens: list[str] | None = None,
+) -> GenericMatch | None:
+    normalized_section = normalized_section or normalize_for_matching(section_text)
+    tokens = tokens if tokens is not None else tokenize_words(section_text)
     best_match: GenericMatch | None = None
 
     for configured_term in rule.terms:
@@ -194,10 +199,17 @@ def analyze_generic_section(
     scoped_rules = [
         rule for rule in generic_rules if section_name in rule.section_scope or "*" in rule.section_scope
     ]
+    normalized_section = normalize_for_matching(compact_section)
+    tokens = tokenize_words(compact_section)
 
     whitelist_terms = whitelist_terms or []
     for rule in scoped_rules:
-        match = _best_match_for_rule(compact_section, rule)
+        match = _best_match_for_rule(
+            compact_section,
+            rule,
+            normalized_section=normalized_section,
+            tokens=tokens,
+        )
         if match is None:
             continue
         if rule.applies_whitelist and _is_whitelisted(

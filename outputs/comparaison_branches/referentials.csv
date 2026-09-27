@@ -3,4 +3,6 @@ generic_rules,79
 whitelist_terms,3
 spacy_synonyms,77
 gliner_label_groups,8
-gliner_labels,24
+gliner_labels,57
+gliner_distractor_labels,35
+gliner_prediction_labels,105
